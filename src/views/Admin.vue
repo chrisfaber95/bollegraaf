@@ -1,0 +1,116 @@
+<template>
+  <div class="admin">
+    <Header />
+    <div class="container-fluid">
+        <h2 class="pagetitle">Admin</h2>
+        <div class="admin-block">
+            <div class="row">  
+                <div class="col-2">
+                    <h3>Accounts</h3>
+                    <b-button @click="changeTopic('account', 'list')">Overzicht</b-button>
+                    <b-button @click="changeTopic('account', 'add')">Toevoegen</b-button>
+                        <hr />
+
+                    <h3>Trainingen</h3>
+                    <b-button @click="changeTopic('training', 'list')">Overzicht</b-button>
+                    <b-button @click="changeTopic('training', 'add')">Toevoegen</b-button>
+                    <b-button @click="changeTopic('training', 'suggesties')">Suggesties</b-button>
+                        <hr />
+                
+                    <h4>Toetsen</h4>
+                    <b-button @click="changeTopic('test', 'list')">Overzicht</b-button>
+                    <b-button @click="changeTopic('test', 'add')">Toevoegen</b-button>
+                </div>
+                <div class="col-10">
+                    <div class="topic-block">
+                        <Adminaccount :setting ="setting"  v-if="topic=='account'"/>
+                        <Admintraining  :setting="setting"  v-if="topic=='training'"/>
+                        <Admintest  :setting="setting"  v-if="topic=='test'"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+</template>
+
+<script>
+// @ is an alias to /src
+//import Trainingitem from '@/components/Trainingitem.vue'
+import Header from '@/components/Header.vue'
+import Adminaccount from '@/components/admin/Account.vue'
+import Admintraining from '@/components/admin/Training.vue'
+import Admintest from '@/components/admin/Test.vue'
+import auth from '@/auth';
+
+export default {
+  name: 'Home',
+  components: {
+      Header,
+      Adminaccount,
+      Admintraining,
+      Admintest
+  },
+  data: function(){
+    return{
+        topic: "account",
+        setting: ""
+    }
+  },
+  methods:{
+    saveInfo: function (){
+      auth.getInfo(this.userLogin.email, this.userLogin.pass);
+    },
+    getInfo: function (){
+      return JSON.parse(localStorage.getItem('userinfo'))
+    },
+    getEmail: function (){
+      return localStorage.getItem('info')
+    },
+    changeTopic: function(topic, setting){
+        this.topic = topic
+        this.setting = setting
+    }
+  },
+  created(){
+  },
+  mounted(){
+    console.log(this.getInfo())
+    this.changeTopic('account', 'list')
+  },
+  computed:{
+  }
+}
+</script>
+
+<style scoped>
+  .pagetitle{
+      border-bottom: 1px solid orange;
+      text-align: start;
+  }
+  .admin{
+    min-height: 100vh;
+  }
+
+    .admin-block{
+        background-color:#EFEFEF;
+        padding: 15px;
+        margin: 15px;
+      text-align: start;
+    }
+    .admin-block button{
+        margin: 10px;
+        width: 100%;
+    }
+  .admin .container-fluid{
+    background-color: #ffffff;
+    min-height: 100vh;
+  }
+
+  #cert{
+      width: 50%;
+  } 
+  #progress{
+      width: 33%;
+  }
+</style>
