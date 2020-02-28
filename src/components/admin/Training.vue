@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import {HTTP} from '@/components/http-common.js';
+import {HTTP} from '@/assets/scripts/http-common.js';
 import Texteditor from '@/components/Texteditor.vue';
 export default {
   name: 'HelloWorld',

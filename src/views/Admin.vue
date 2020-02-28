@@ -37,11 +37,11 @@
 <script>
 // @ is an alias to /src
 //import Trainingitem from '@/components/Trainingitem.vue'
-import Header from '@/components/Header.vue'
+import Header from '@/components/general/Header.vue'
 import Adminaccount from '@/components/admin/Account.vue'
 import Admintraining from '@/components/admin/Training.vue'
 import Admintest from '@/components/admin/Test.vue'
-import auth from '@/auth';
+import auth from '@/assets/scripts/auth';
 
 export default {
   name: 'Home',

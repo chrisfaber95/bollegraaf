@@ -3,7 +3,7 @@
         <div class="row">
             <div class="logo">
                 <b-navbar-brand href="#">
-                    <img class="img-fluid" src= "../assets/Bollegraaf_logo_wit.png" height="40" width="200">
+                    <img class="img-fluid" src= "@/assets/Bollegraaf_logo_wit.png" height="40" width="200">
                 </b-navbar-brand>
             </div>
             <div class="navlist">
@@ -66,8 +66,8 @@
 </template>
 
 <script>
-import auth from '@/auth';
-import {HTTP} from '@/components/http-common.js'
+import auth from '@/assets/scripts/auth';
+import {HTTP} from '@/assets/scripts/http-common.js'
 
 export default {
   name: 'HelloWorld',

@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import auth from '@/auth'
-import Home from '../views/Home.vue'
+import auth from '@/assets/scripts/auth'
+import Home from '@/views/Home.vue'
 
 Vue.use(VueRouter)
 
@@ -28,14 +28,6 @@ const routes = [
     }
   },
   {
-    path: '/about',
-    name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
-  },
-  {
     path: '/login',
     name: 'Login',
     // route level code-splitting
@@ -44,17 +36,17 @@ const routes = [
     component: () => import(/* webpackChunkName: "about" */ '../views/Login.vue')
   },
   {
-    path: '/berichten',
-    name: 'Berichten',
+    path: '/messages',
+    name: 'Messages',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/Berichten.vue'),
+    component: () => import(/* webpackChunkName: "about" */ '../views/Messages.vue'),
     meta:{
       requiresAuth: true,
       breadcrumbs: [
         { name: 'Home', link:'home'},
-        { name: 'Berichten', link:'berichten'}
+        { name: 'Messages', link:'messages'}
       ]
     }
   },
@@ -74,78 +66,78 @@ const routes = [
     }
   },
   {
-    path: '/instellingen',
-    name: 'Instellingen',
+    path: '/settings',
+    name: 'Settings',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/Instellingen.vue'),
+    component: () => import(/* webpackChunkName: "about" */ '../views/Settings.vue'),
     meta:{
       requiresAuth: true,
       breadcrumbs: [
         { name: 'Home', link:'home'},
-        { name: 'Instellingen', link:'instellingen'}
+        { name: 'Settings', link:'settings'}
       ]
     }
   },
   {
-    path: '/profiel',
-    name: 'Profiel',
+    path: '/profile',
+    name: 'Profile',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/Profiel.vue'),
+    component: () => import(/* webpackChunkName: "about" */ '../views/Profile.vue'),
     meta:{
       requiresAuth: true,
       breadcrumbs: [
         { name: 'Home', link:'home'},
-        { name: 'Profiel', link:'profiel'}
+        { name: 'Profile', link:'profile'}
       ]
     }
   },
   {
-    path: '/voortgang',
-    name: 'Voortgang',
+    path: '/progress',
+    name: 'Progress',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/Voortgang.vue'),
+    component: () => import(/* webpackChunkName: "about" */ '../views/Progress.vue'),
     meta:{
       requiresAuth: true,
       breadcrumbs: [
         { name: 'Home', link:'home'},
-        { name: 'Voortgang', link:'voortgang'}
+        { name: 'Progress', link:'progress'}
       ]
     }
   },
   {
-    path: '/trainingen/:page',
-    name: 'Trainingen',
+    path: '/training/:page',
+    name: 'Training',
     props: true,
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/Trainingen.vue'),
-    meta:{
-      requiresAuth: true,
-      breadcrumbs: [
-        { name: 'Home', link:'home'},
-        { name: 'Trainingen', link:'trainingen'}
-      ]
-    }
-  },
-  {
-    path: '/training',
-    name: 'Training',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/Trainingpagina.vue'),
+    component: () => import(/* webpackChunkName: "about" */ '../views/Training.vue'),
     meta:{
       requiresAuth: true,
       breadcrumbs: [
         { name: 'Home', link:'home'},
         { name: 'Training', link:'training'}
+      ]
+    }
+  },
+  {
+    path: '/trainingpage/:training',
+    name: 'Trainingpage',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "about" */ '../views/Trainingpagina.vue'),
+    meta:{
+      requiresAuth: false,
+      breadcrumbs: [
+        { name: 'Home', link:'home'},
+        { name: 'Training', link:'trainingpage'}
       ]
     }
   },
