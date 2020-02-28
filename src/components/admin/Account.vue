@@ -121,7 +121,7 @@
 </template>
 
 <script>
-import {HTTP} from '@/components/http-common.js';
+import {HTTP} from '@/assets/scripts/http-common.js';
 export default {
   name: 'HelloWorld',
   props: [

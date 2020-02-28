@@ -1,7 +1,7 @@
 <template>
   <div class="training row">
         <div class="trainingimg">
-            <img class="img-fluid" src= "../assets/bollegraaf_background.jpg">
+            <img class="img-fluid" src= "@/assets/bollegraaf_background.jpg">
         </div>
         <div class="traininginfo">
             <span>Eindtoets: {{training}}</span>

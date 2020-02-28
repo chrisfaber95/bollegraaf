@@ -6,14 +6,14 @@
         <b-input type="text" placeholder="Gebruikersnaam" v-model="userLogin.email"/>
         <b-input type="password" placeholder="Wachtwoord" v-model="userLogin.pass"/>
         <b-button @click="login()">Inloggen</b-button>
-       <!-- <b-button @click="register()">register</b-button> -->
+        <b-button @click="register()">register</b-button> 
     </div>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import auth from '@/auth';
+import auth from '@/assets/scripts/auth';
 
 export default {
   name: 'Home',

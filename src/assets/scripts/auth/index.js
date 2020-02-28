@@ -1,5 +1,5 @@
-import {HTTP} from '@/components/http-common.js';
-import router from '../router';
+import {HTTP} from '@/assets/scripts/http-common.js';
+import router from '@/router';
 
 export default{
     user:{
@@ -55,7 +55,7 @@ export default{
         }
         HTTP.post("user/register", data)
         .then(response => {
-            console.log(response.data)
+            console.log(response)
         })
         .catch(e => {
             console.log(e)

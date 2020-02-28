@@ -7,7 +7,7 @@
                 </b-navbar-brand>
             </div>
             <div class="title">
-             <h2> Training: ......... </h2>
+             <h2> Training: {{this.training.trainingName}} </h2>
             </div>
         </div>
         <div id="training-block">
@@ -42,11 +42,28 @@
 </template>
 
 <script>
+import {HTTP} from '@/assets/scripts/http-common.js';
+
 export default {
   name: 'HelloWorld',
   props: [
   ],
+  data: function(){
+    return{
+      training: null    
+    }
+  },
+  methods:{
+    getTraining: function(){
+       HTTP.get('training/'+this.$route.params.training)
+      .then(response =>{
+        this.training = response.data.training
+        console.log(this.training)
+      })
+    }
+  },
   mounted(){
+    this.getTraining()
  }
 }
 </script>

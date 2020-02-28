@@ -30,14 +30,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-6" v-if="selectedMessage">
-                <p>Datum: {{selectedMessage.mDate}}</p>
-                <p>Afzender: {{selectedMessage.fromName + " " + selectedMessage.fromSurname}}</p>
-                <p>Onderwerp: {{selectedMessage.mSubject}}</p>
-                <hr>
-                <p>Bericht: </p>
-                {{selectedMessage.mContent}}
-            </div>
+           <Message />
         </div>
         </div>
     </div>
@@ -47,13 +40,15 @@
 <script>
 // @ is an alias to /src
 //import Trainingitem from '@/components/Trainingitem.vue'
-import Header from '@/components/Header.vue'
-import {HTTP} from '@/components/http-common.js'
+import Header from '@/components/general/Header.vue'
+import Message from '@/components/messages/Message.vue'
+import {HTTP} from '@/assets/scripts/http-common.js'
 
 export default {
   name: 'Home',
   components: {
-      Header
+      Header,
+      Message
   },
   data: function(){
     return{

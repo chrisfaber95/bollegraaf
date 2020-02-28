@@ -4,7 +4,7 @@
             <img class="img-fluid" :src="imageUrl(training.tImage)">
         </div>
         <div class="traininginfo" v-if=followed>
-            <span>Training: {{training.tName}}</span>
+            <span>Training: {{training.oName}}{{training.tName}}</span>
             <hr>
             <div class="row">
                 <div class="col-6">
@@ -15,7 +15,7 @@
                 </div>
                 <div class="col-6">
                     <span>Inhoud van deze training</span>
-                    <p>............</p>
+                    <p>{{training.oShort}}</p>
                 </div>
             </div>
             <div class="row">
@@ -61,7 +61,7 @@ export default {
  },
  methods:{
    imageUrl: function(pet){
-     return require('../assets/Afbeeldingen_vierkant/' + pet)
+     return require('@/assets/Afbeeldingen_vierkant/' + pet)
    },
    countSubs: function(){
      if(this.$props.training.lastSubonderdeel){

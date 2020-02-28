@@ -7,25 +7,25 @@
           <div class="trainingfollow">
             <h3>Mijn trainingen</h3>
             <hr>
-            <Trainingitem v-for="training in filteredGevolgd" v-bind:key="training.id" :training="training" :followed="true"/>
+            <Training :followed="true" :amount="1"/>
             <router-link :to="{ name: 'Trainingen', params: {page: 'followed' }}" :tag="link">Bekijk al mijn trainingen</router-link>
           </div>
           <div class="trainingall">
             <h3>Alle trainingen</h3>
             <hr>
-            <Trainingitem v-for="training in filteredTraining" v-bind:key="training.id" :training="training" :followed="false"/>
+            <Training :followed="false"  :amount="all"/>
           </div>
         </div>
         <div class="col-5">
           <div class="voortgang">
             <h3>Mijn voortgang</h3>
-            <Voortgangitem />
+            <Progress />
             <p>Bekijk de hele voortgang</p>
           </div>
           <div class="Eindtoetsen">
             <h3>Eindtoetsen</h3>
             <p>Er zijn eindtoetsen beschikbaar</p>
-            <Eindtoetsitem :training="training1"/>
+            <Quiz/>
           </div>
         </div>
       </div>
@@ -35,18 +35,18 @@
 
 <script>
 // @ is an alias to /src
-import Trainingitem from '@/components/Trainingitem.vue'
-import Voortgangitem from '@/components/Voortgangitem.vue'
-import Eindtoetsitem from '@/components/Eindtoetsitem.vue'
-import Header from '@/components/Header.vue'
-import {HTTP} from '@/components/http-common.js';
+import Training from '@/components/homescreen/Training.vue'
+import Progress from '@/components/homescreen/Progress.vue'
+import Quiz from '@/components/homescreen/Quiz.vue'
+import Header from '@/components/general/Header.vue'
+import {HTTP} from '@/assets/scripts/http-common.js';
 
 export default {
   name: 'Home',
   components: {
-    Trainingitem,
-    Voortgangitem,
-    Eindtoetsitem,
+    Training,
+    Progress,
+    Quiz,
     Header
   },
   data: function(){

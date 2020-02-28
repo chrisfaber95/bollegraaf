@@ -24,7 +24,7 @@
 <script>
 // @ is an alias to /src
 //import Trainingitem from '@/components/Trainingitem.vue'
-import Header from '@/components/Header.vue'
+import Header from '@/components/general/Header.vue'
 
 export default {
   name: 'Home',
