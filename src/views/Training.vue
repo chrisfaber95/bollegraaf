@@ -12,23 +12,24 @@
         </div>
         <div class="training-block" v-if="page=='followed'">
            <div class="training" v-for="(training, index) in filteredGevolgd" v-bind:key="training.id" @click="showSub(training)">
-               <div class="line">
-                    <div class="line-tekst">
-                        <font-awesome-icon icon="caret-right" /><b>{{index + 1}}. {{training.oName}}</b>
-                    </div>
-               </div>
-               <div v-if="training.show">
-                <div class="trainingSub" v-for="(sub, index) in filterSub(training.oId)" v-bind:key="sub.sId">
+                <font-awesome-icon icon="caret-right" /><b>{{index + 1}}. {{training.tName}}</b>
+                <div class="trainingSub" v-for="(sub, index) in filterOnd(training.training_id)" v-bind:key="sub.oId">
                     <div class="line">
-                        <div class="line-tekst" v-if="sub.isVisible == 1">
-                            <p>{{index + 1}}. {{sub.sName}}</p>
-                            <b-button class="start-btn">Start</b-button>
-                        </div>
-                        <div class="line-tekst" v-if="sub.isVisible == 0">
-                            <p>{{index + 1}}. {{sub.sName}}</p>
-                            <b-button class="stop-btn">Niet beschikbaar</b-button>
+                        <div class="line-tekst">
+                            <font-awesome-icon icon="caret-right" /><b>{{index + 1}}. {{sub.oName}}</b>
                         </div>
                     </div>
+                    <div class="trainingSub" v-for="(sub, index) in filterSub(sub.onderdeel_id)" v-bind:key="sub.sId">
+                        <div class="line">
+                            <div class="line-tekst" v-if="sub.isVisible == 1">
+                                <p>{{index + 1}}. {{sub.sName}}</p>
+                                <b-button class="start-btn">Start</b-button>
+                            </div>
+                            <div class="line-tekst" v-if="sub.isVisible == null">
+                                <p>{{index + 1}}. {{sub.sName}}</p>
+                                <b-button class="stop-btn">Niet beschikbaar</b-button>
+                            </div>
+                        </div>
                     </div>
                 </div>
            </div>
@@ -71,35 +72,34 @@ export default {
       HTTP.get('training')
       .then(response =>{
         this.trainingen = response.data.training
-        console.log(this.trainingen);
       })
     },
     getFollowedTraining: function(){
-      HTTP.get('user/'+localStorage.getItem('id_token')+'/training')
-      .then(response =>{
-        this.followed = response.data.training;
-        console.log(this.followed)
-        for(var item in this.followed){
-            this.followed[item]["show"] = true;
-        }
-      })
+        HTTP.get('training/user/'+localStorage.id_token)
+        .then(response =>{
+        this.followed = response.data.training
+        })
     },
     filterSub: function(onderdeel){
-        console.log(onderdeel);
-        const filteredOnderdeel = []
-        for(var item in this.followed){
-            console.log
-            if(this.followed[item].oId == onderdeel){
-                if(filteredOnderdeel.length == 0){
-                    filteredOnderdeel.push(this.followed[item]);
-                }
-                else if(this.followed[item].sId != filteredOnderdeel[filteredOnderdeel.length - 1].sId){
-                    filteredOnderdeel.push(this.followed[item]);
+            var filteredTraining = []
+            for(var item in this.trainingen){
+                if(this.trainingen[item].onderdeel_id == onderdeel){
+                    filteredTraining.push(this.trainingen[item]);
                 }
             }
-        }
-      console.log(filteredOnderdeel)
-        return filteredOnderdeel;
+        return filteredTraining;
+    },
+    filterOnd: function(onderdeel){
+            var filteredTraining = []
+            var idArr = []
+            for(var item in this.trainingen){
+                if(this.trainingen[item].training_id == onderdeel && !idArr.includes(this.trainingen[item].onderdeel_id)){
+                    filteredTraining.push(this.trainingen[item]);
+                    idArr.push(this.trainingen[item].onderdeel_id)
+                }
+            }
+            console.log(filteredTraining)
+        return filteredTraining;
     },
     showSub: function(training){
         if(training.show == true){
@@ -108,7 +108,6 @@ export default {
         else{
             training.show = true
         }
-        console.log(training);
     }
   },
   created(){
@@ -120,21 +119,32 @@ export default {
       return this.trainingen;
     },
     filteredGevolgd: function(){
-      const filteredFollowed = []
-      const idArr = []
-      for(var item in this.followed){
+      var filteredFollowed = []
+      var idArr = []
+      for(var item in this.trainingen){
         if(filteredFollowed.length == 0){
-            filteredFollowed.push(this.followed[item])
-            idArr.push(this.followed[item].oId)
+            filteredFollowed.push(this.trainingen[item])
+            idArr.push(this.trainingen[item].training_id)
         }
-        else if(!idArr.includes(this.followed[item].oId)){
-            filteredFollowed.push(this.followed[item])
-            idArr.push(this.followed[item].oId)
+        else if(!idArr.includes(this.trainingen[item].training_id)){
+            filteredFollowed.push(this.trainingen[item])
+            idArr.push(this.trainingen[item].training_id)
         }
       }
       console.log(filteredFollowed)
       return filteredFollowed
      // return this.followed;
+    },
+    newfilteredTraining: function(trainingId){
+      var filteredTraining = []
+
+      for(var item in this.trainingen){
+          if(this.trainingen[item].trainingId == trainingId){
+              filteredTraining = [];
+          }
+      }
+      console.log(filteredTraining)
+      return filteredTraining;
     }
   }
 }

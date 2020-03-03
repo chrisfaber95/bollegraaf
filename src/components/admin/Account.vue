@@ -145,7 +145,7 @@ export default {
           })
       },
       updateAccounts: function(account){
-          HTTP.put('user/update/'+account.id+'/', account)
+          HTTP.put('user/update/'+account.user_id+'/', account)
           .then(response => {
             console.log(response.data)
             return response.data.user

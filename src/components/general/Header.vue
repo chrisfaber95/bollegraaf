@@ -15,24 +15,24 @@
                     <b-navbar-nav>
                         <router-link to="/home" tag="b-nav-item">Home</router-link>
                         <b-nav-item-dropdown :text="getHeaderName()">
-                            <router-link :to="{ name: 'Profiel'}" tag="b-dropdown-item">Profiel</router-link>
-                            <router-link :to="{ name: 'Instellingen'}" tag="b-dropdown-item">Instellingen</router-link>
+                            <router-link :to="{ name: 'Profile'}" tag="b-dropdown-item">Profiel</router-link>
+                            <router-link :to="{ name: 'Settings'}" tag="b-dropdown-item">Instellingen</router-link>
                         </b-nav-item-dropdown>
                         <b-nav-item-dropdown text="Trainingen">
-                            <router-link :to="{ name: 'Trainingen', params: {page: 'followed' }}" tag="b-dropdown-item">Mijn trainingen</router-link>
-                            <router-link :to="{ name: 'Trainingen', params: {page: 'all' }}" tag="b-dropdown-item">Alle trainingsprogramma's</router-link>
+                            <router-link :to="{ name: 'Training', params: {page: 'followed' }}" tag="b-dropdown-item">Mijn trainingen</router-link>
+                            <router-link :to="{ name: 'Training', params: {page: 'all' }}" tag="b-dropdown-item">Alle trainingsprogramma's</router-link>
                         </b-nav-item-dropdown>
                         <router-link to="/voortgang" tag="b-nav-item">Voortgang</router-link>
-                        <router-link :to="{ name: 'Trainingen', params: {page: 'tests' } }" tag="b-nav-item">Eindtoetsen</router-link>
+                        <router-link :to="{ name: 'Training', params: {page: 'tests' } }" tag="b-nav-item">Eindtoetsen</router-link>
                         <div id="bericht-navlink">
-                            <router-link to="/berichten" tag="b-nav-item">Berichten {{notReaded}}</router-link>
+                            <router-link to="/messages" tag="b-nav-item">Berichten {{notReaded}}</router-link>
                             <div v-if="notOpenedMail" class="berichtheader-blok">
                                 <p>Berichten</p>
                                 <hr>
                                 <p>{{notOpenedMail.mDate}}</p>
                                 <p>{{notOpenedMail.mSubject}}</p>
                                 <hr>
-                                <p>Bekijk alle berichten</p>
+                                <router-link to="/messages" tag="b-nav-item">Bekijk alle berichten</router-link>
                             </div>
                         </div>
                         <router-link to="/admin" tag="b-nav-item" v-if="permissions == 2">Admin</router-link>
