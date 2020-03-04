@@ -99,7 +99,7 @@
         </div>
         <div class="profile-block col-6" id="contact">
             <h3>Contactinformatie</h3>
-            <div class="inputrow"><p>E-mailadres</p><input type="text"  v-model="info.name"/></div>
+            <div class="inputrow"><p>E-mailadres</p><input type="text"  v-model="info.email"/></div>
             <div class="inputrow"><p>Werktelefoon</p><input type="text"  v-model="info.workphone"/></div>
             <div class="inputrow"><p>Prive-telefoon</p><input type="text"  v-model="info.privephone"/></div>
         </div>
@@ -115,7 +115,7 @@
             <div class="inputrow"><p>Taal</p><input type="text" /></div>
             <div class="inputrow"><p>Rechten</p><input type="text" /></div>
         </div>
-        <b-button>Account toevoegen</b-button>
+        <b-button @click="addAccount()">Account toevoegen</b-button>
         </div>
     </div>
 </template>
@@ -130,7 +130,19 @@ export default {
   data: function(){
     return{
         account: [],
-        info: [],
+        info: {
+            'name': '',
+            'surname': '',
+            'city': '',
+            'country': '',
+            'email': '',
+            'workphone': '',
+            'privephone': '',
+            'function': '',
+            'company': '',
+            'company_city': '', 
+            'company_country': ''
+        },
         selectedUser: null,
         trainingen: null
     }
@@ -138,6 +150,15 @@ export default {
   methods:{
       getAccounts: function(){
           HTTP.get('user')
+          .then(response => {
+            console.log(response.data)
+            this.account = response.data.user
+            return response.data.user
+          })
+      },
+      addAccount: function(){
+          console.log(this.info)
+          HTTP.post('user', this.info)
           .then(response => {
             console.log(response.data)
             this.account = response.data.user

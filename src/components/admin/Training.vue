@@ -4,20 +4,22 @@
          <div v-if="setting=='list'">
             <div class="row">
                 <div class="col-1">
-                    <div v-for="training in filteredTrainingen" v-bind:key="training.id" @click="getSelectedTraining(training.tId)">
-                      {{training.tName}}
+                    <div v-for="training in filteredTrainingen" v-bind:key="training.id" @click="getSelectedTraining(training.training_id)">
+                      <p>{{training.tName}}--{{training.oName}}---{{training.sName}}</p>
                     </div>
                 </div>
                 <div class="col-2" v-if="selectedTraining">
-                    <div v-for="onderdeel in selectedTraining" v-bind:key="onderdeel.id" @click="getInformation(onderdeel)">
+                    <div v-for="onderdeel in selectedTraining" v-bind:key="onderdeel.subonderdeel_id" @click="getInformation(onderdeel.subonderdeel_id)">
+                      
                       {{onderdeel.oName}}
                       {{onderdeel.sName}}
                       {{onderdeel.oTime}}
                     </div>
                 </div>
-                <div class="col-9" v-if="selectedInformation">
-                    <Texteditor ref="editor" :text="selectedInformation[0].iText"/>
-                  {{selectedInformation}}
+                <div class="col-9">
+                  <!--  <Texteditor ref="editor" :text="selectedInformation[0].iText"/> -->
+                  <ckeditor :editor="editor" v-model="selectedInformation[0].iText" :config="editorConfig"></ckeditor>
+                  {{selectedInformation[0]}}
                   <b-button @click="saveInformation(selectedInformation[0])"> </b-button>
                 </div>
                 
@@ -30,21 +32,24 @@
 </template>
 
 <script>
-import {HTTP} from '@/assets/scripts/http-common.js';
-import Texteditor from '@/components/Texteditor.vue';
+import {HTTP} from '@/assets/scripts/http-common.js'
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 export default {
   name: 'HelloWorld',
   props: [
     'setting'
   ],
   components:{
-    Texteditor
   },
   data: function(){
     return{
         trainingen: [],
         selectedTraining: null,
-        selectedInformation: null
+        selectedInformation: [],
+        editor: ClassicEditor,
+        editorConfig: {// The configuration of the editor.
+            },
+        editorData: '',
     }
   },
   methods:{
@@ -53,7 +58,7 @@ export default {
           .then(response => {
             console.log(response.data)
             this.trainingen = response.data.training
-            return response.data.training
+            return this.trainingen
           })
       },
       getSelectedTraining: function(training){
@@ -66,15 +71,20 @@ export default {
           })
       },
       getInformation: function(onderdeel){
-          HTTP.get('information/'+onderdeel.sId)
+        console.log(this.selectedInformation)
+              this.selectedInformation[0].sId = onderdeel;
+          HTTP.get('information/'+onderdeel)
           .then(response => {
             console.log(response.data)
-            this.selectedInformation = response.data.info
-            return response.data.info
+            if(response.data.info != []){
+              this.selectedInformation = response.data.info
+           //   this.editorDate = this.selectedInformation[0].iText
+           //   return this.selectedInformation[0]
+            }
           })
       },
       saveInformation: function(info){
-        info.iText = this.$refs.editor.getEditorText();
+       // info.iText = this.$refs.editor.getEditorText();
         console.log(info)
           HTTP.put('information/update/'+info.iId, info)
           .then(response => {
@@ -87,6 +97,8 @@ export default {
   },
   mounted(){
       this.getTrainingen();
+
+        this.selectedInformation[0] = {iId: null, iText: '', iPage: 1, sId: null}
  },
  computed:{
      filteredTrainingen: function(){
