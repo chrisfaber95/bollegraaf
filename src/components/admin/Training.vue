@@ -4,23 +4,37 @@
          <div v-if="setting=='list'">
             <div class="row">
                 <div class="col-1">
-                    <div v-for="training in filteredTrainingen" v-bind:key="training.id" @click="getSelectedTraining(training.training_id)">
-                      <p>{{training.tName}}--{{training.oName}}---{{training.sName}}</p>
+                    <div v-for="training in filteredTrainingen" v-bind:key="'training'+training.training_id" @click="selectedTraining = training.training_id">
+                      <p>{{training.tName}}</p>
                     </div>
                 </div>
-                <div class="col-2" v-if="selectedTraining">
-                    <div v-for="onderdeel in selectedTraining" v-bind:key="onderdeel.subonderdeel_id" @click="getInformation(onderdeel.subonderdeel_id)">
-                      
+                <div class="col-1" v-if="selectedTraining">
+                    <div v-for="onderdeel in filteredOnderdeel" v-bind:key="'onderdeel'+onderdeel.onderdeel_id" @click="selectedOnderdeel = onderdeel.onderdeel_id">
                       {{onderdeel.oName}}
-                      {{onderdeel.sName}}
-                      {{onderdeel.oTime}}
                     </div>
                 </div>
-                <div class="col-9">
+                <div class="col-1" v-if="selectedOnderdeel">
+                    <div v-for="sub in filteredSub" v-bind:key="'onderdeel'+sub.subonderdeel_id" @click="getInformation(sub.subonderdeel_id); selectedSub = sub.subonderdeel_id">
+                      {{sub.sName}}
+                    </div>
+                </div>
+                <div class="col-9" v-if="selectedSub">
                   <!--  <Texteditor ref="editor" :text="selectedInformation[0].iText"/> -->
-                  <ckeditor :editor="editor" v-model="selectedInformation[0].iText" :config="editorConfig"></ckeditor>
-                  {{selectedInformation[0]}}
-                  <b-button @click="saveInformation(selectedInformation[0])"> </b-button>
+                  <carousel 
+                    :per-page="1" 
+                    :mouse-drag="false" 
+                    paginationColor='#000000'
+                    paginationActiveColor="#999999"
+                    paginationPosition= "top"
+                    >
+                  <slide class="editors" v-for="edit in info" v-bind:key="'info'+edit.iId">
+                    <div>
+                    <ckeditor :editor="editor" v-model="edit.iText" :config="editorConfig"></ckeditor>
+                    <label>Pagina: </label><input v-model="edit.iPage" :type="'number'" />
+                    <b-button @click="saveInformation(edit)">Opslaan</b-button>
+                    </div>
+                  </slide>
+                  </carousel>
                 </div>
                 
             </div>
@@ -32,6 +46,7 @@
 </template>
 
 <script>
+import { Carousel, Slide } from 'vue-carousel';
 import {HTTP} from '@/assets/scripts/http-common.js'
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 export default {
@@ -40,12 +55,22 @@ export default {
     'setting'
   ],
   components:{
+    Carousel,
+    Slide
   },
   data: function(){
     return{
         trainingen: [],
         selectedTraining: null,
-        selectedInformation: [],
+        selectedOnderdeel: null,
+        selectedSub: null,
+        info: [{
+          sId: 0,
+          iPage: 0,
+          iId: 0,
+          iText: ''
+        }],
+        pageEdit: 0,
         editor: ClassicEditor,
         editorConfig: {// The configuration of the editor.
             },
@@ -71,16 +96,18 @@ export default {
           })
       },
       getInformation: function(onderdeel){
-        console.log(this.selectedInformation)
-              this.selectedInformation[0].sId = onderdeel;
+          this.info=[{
+              sId: onderdeel,
+              iPage: 0,
+              iId: 0,
+              iText: ''
+          }]
+          this.selectedsub = onderdeel;
           HTTP.get('information/'+onderdeel)
           .then(response => {
-            console.log(response.data)
-            if(response.data.info != []){
-              this.selectedInformation = response.data.info
-           //   this.editorDate = this.selectedInformation[0].iText
-           //   return this.selectedInformation[0]
-            }
+           for(var item in response.data.info){
+             this.info.push(response.data.info[item])
+           }
           })
       },
       saveInformation: function(info){
@@ -89,20 +116,54 @@ export default {
           HTTP.put('information/update/'+info.iId, info)
           .then(response => {
             console.log(response.data)
-            this.selectedInformation = response.data.info
-            return response.data.info
           })
       },
+      updatePage: function(edit){
+        console.log(this.pageEdit);
+        console.log(edit)
+        this.info[edit].iPage = this.pageEdit;
+      }
 
   },
   mounted(){
       this.getTrainingen();
-
-        this.selectedInformation[0] = {iId: null, iText: '', iPage: 1, sId: null}
  },
  computed:{
      filteredTrainingen: function(){
-         return this.trainingen
+       var filtered = []
+       var filteredIds = []
+       for(var item in this.trainingen){
+         if(!filteredIds.includes(this.trainingen[item].training_id)){
+           filtered.push({'training_id': this.trainingen[item].training_id, 'tName': this.trainingen[item].tName})
+           filteredIds.push(this.trainingen[item].training_id)
+         }
+       }
+       console.log(filtered)
+         return filtered
+     },
+     filteredOnderdeel: function(){
+       var filtered = []
+       var filteredIds = []
+       for(var item in this.trainingen){
+         if(!filteredIds.includes(this.trainingen[item].onderdeel_id) && this.trainingen[item].training_id == this.selectedTraining){
+           filtered.push({'onderdeel_id': this.trainingen[item].onderdeel_id, 'oName': this.trainingen[item].oName})
+           filteredIds.push(this.trainingen[item].onderdeel_id)
+         }
+       }
+       console.log(filtered)
+         return filtered
+     },
+     filteredSub: function(){
+       var filtered = []
+       var filteredIds = []
+       for(var item in this.trainingen){
+         if(!filteredIds.includes(this.trainingen[item].subonderdeel_id) && this.trainingen[item].onderdeel_id == this.selectedOnderdeel){
+           filtered.push({'subonderdeel_id': this.trainingen[item].subonderdeel_id, 'sName': this.trainingen[item].sName})
+           filteredIds.push(this.trainingen[item].subonderdeel_id)
+         }
+       }
+       console.log(filtered)
+         return filtered
      }
  },
  watch:{

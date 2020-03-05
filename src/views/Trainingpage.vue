@@ -14,20 +14,23 @@
           <div class="test-block">
               <h2>Introductie</h2>
               <hr>
-              <div class="row">
-                <div class="col-6">
-                  <p>Linker kollom</p>
-                </div>
-                <div class="col-6">
-                  <p>rechter kollom</p>
-                </div>
-              </div>
+              <carousel 
+                :per-page="1" 
+                :mouse-drag="false" 
+                paginationColor='#000000'
+                paginationActiveColor="#999999"
+                paginationPosition= "bottom"
+                >
+              <slide class="editors" v-for="item in filteredTrainingen" v-bind:key="'info'+item.information_id">
+                <div v-html="item.text"></div>
+              </slide>
+              </carousel>
           </div>
           <div class="footer">
-            <b-button id="afsluiten-btn">Afsluiten</b-button>
+            <router-link :to="'/'"><b-button id="afsluiten-btn">Afsluiten</b-button></router-link>
             <b-button id="help-btn">Help</b-button>
-            <div id="training-btn">
-              <p>Training block block block block</p>
+            <div id="training-btn" v-for="item in filteredTrainingen" v-bind:key="'page'+item.page">
+             <p>-</p>
             </div>
             <div id="test-btn">
               <p>Test block block block</p>
@@ -43,28 +46,40 @@
 
 <script>
 import {HTTP} from '@/assets/scripts/http-common.js';
+import { Carousel, Slide } from 'vue-carousel';
 
 export default {
   name: 'HelloWorld',
+  components:{
+      Carousel,
+      Slide
+  },
   props: [
   ],
   data: function(){
     return{
-      training: null    
+      onderdeel_id: null,
+      training: null
     }
   },
   methods:{
     getTraining: function(){
-       HTTP.get('training/'+this.$route.params.training)
+      console.log(this.$route)
+       HTTP.get('training/onderdeel/'+this.$route.params.training)
       .then(response =>{
-        this.training = response.data.training
+        this.training = response.data.onderdeel
         console.log(this.training)
       })
     }
   },
   mounted(){
     this.getTraining()
- }
+ },
+ computed:{
+     filteredTrainingen: function(){
+       return this.training
+     }
+  } 
 }
 </script>
 

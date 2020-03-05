@@ -23,11 +23,11 @@
                         <div class="line">
                             <div class="line-tekst" v-if="sub.isVisible == 1">
                                 <p>{{index + 1}}. {{sub.sName}}</p>
-                                <b-button class="start-btn">Start</b-button>
+                                <router-link :to="'/trainingpage/'+index"><b-button class="start-btn">Start</b-button></router-link>
                             </div>
                             <div class="line-tekst" v-if="sub.isVisible == null">
                                 <p>{{index + 1}}. {{sub.sName}}</p>
-                                <b-button class="stop-btn">Niet beschikbaar</b-button>
+                                <router-link :to="'/trainingpage/'+sub.subonderdeel_id"><b-button class="stop-btn">Niet beschikbaar</b-button></router-link>
                             </div>
                         </div>
                     </div>
