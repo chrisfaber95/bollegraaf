@@ -77,7 +77,13 @@ export default {
  },
  computed:{
      filteredTrainingen: function(){
-       return this.training
+       var filtered = [];
+       for(var item in this.training){
+         if(this.training[item].page != 0){
+           filtered.push(this.training[item])
+         }
+       }
+       return filtered
      }
   } 
 }

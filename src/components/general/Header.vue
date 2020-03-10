@@ -14,7 +14,7 @@
                     <b-collapse id="nav-collapse" is-nav>
                     <b-navbar-nav>
                         <router-link to="/home" tag="b-nav-item">Home</router-link>
-                        <b-nav-item-dropdown :text="getHeaderName()">
+                        <b-nav-item-dropdown :text="getHeader">
                             <router-link :to="{ name: 'Profile'}" tag="b-dropdown-item">Profiel</router-link>
                             <router-link :to="{ name: 'Settings'}" tag="b-dropdown-item">Instellingen</router-link>
                         </b-nav-item-dropdown>
@@ -22,7 +22,7 @@
                             <router-link :to="{ name: 'Training', params: {page: 'followed' }}" tag="b-dropdown-item">Mijn trainingen</router-link>
                             <router-link :to="{ name: 'Training', params: {page: 'all' }}" tag="b-dropdown-item">Alle trainingsprogramma's</router-link>
                         </b-nav-item-dropdown>
-                        <router-link to="/voortgang" tag="b-nav-item">Voortgang</router-link>
+                        <router-link to="/progress" tag="b-nav-item">Voortgang</router-link>
                         <router-link :to="{ name: 'Training', params: {page: 'tests' } }" tag="b-nav-item">Eindtoetsen</router-link>
                         <div id="bericht-navlink">
                             <router-link to="/messages" tag="b-nav-item">Berichten {{notReaded}}</router-link>
@@ -130,7 +130,16 @@ export default {
      '$route' (){
          this.updateList()
      }
- }
+ },
+ computed: {
+     getHeader: function(){
+         var head = 'Welkom';
+         if(JSON.parse(localStorage.getItem('userinfo')) != null){
+            head = "Welkom, " + JSON.parse(localStorage.getItem('userinfo'))[0].name + " " + JSON.parse(localStorage.getItem('userinfo'))[0].surname
+         }
+         return head;
+     }
+ },
 }
 </script>
 

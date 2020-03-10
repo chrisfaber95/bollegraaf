@@ -2,24 +2,62 @@
   <div class="training">
         <h2>Training</h2>
          <div v-if="setting=='list'">
-            <div class="row">
-                <div class="col-1">
-                    <div v-for="training in filteredTrainingen" v-bind:key="'training'+training.training_id" @click="selectedTraining = training.training_id">
-                      <p>{{training.tName}}</p>
-                    </div>
+            <div class="row" id="selection">
+                <div class="col-12">
+                    <div class="title"><h3>Training</h3><b-button>Voeg toe</b-button></div>
+                    <b-button v-for="training in filteredTrainingen" 
+                              v-bind:key="'training'+training.training_id" 
+                              @click="selectedTraining = training.training_id; selectedOnderdeel = null; active_onderdeel = null; active_training  = 'training'+training.training_id"
+                              v-bind:class="{ 'active':  active_training  == 'training'+training.training_id }">
+                      {{training.tName}}
+                    </b-button>
                 </div>
-                <div class="col-1" v-if="selectedTraining">
-                    <div v-for="onderdeel in filteredOnderdeel" v-bind:key="'onderdeel'+onderdeel.onderdeel_id" @click="selectedOnderdeel = onderdeel.onderdeel_id">
+                <div class="col-12" v-if="selectedTraining">
+                    <div class="title"><h3>Onderdeel</h3><b-button>Voeg toe</b-button></div>
+                    <b-button v-for="onderdeel in filteredOnderdeel" 
+                              v-bind:key="'onderdeel'+onderdeel.onderdeel_id" 
+                              @click="selectedOnderdeel = onderdeel.onderdeel_id; selectedSub = null; active_sub = null; active_onderdeel = 'onderdeel'+onderdeel.onderdeel_id"
+                             v-bind:class="{ 'active':  active_onderdeel == 'onderdeel'+onderdeel.onderdeel_id }" >
                       {{onderdeel.oName}}
-                    </div>
+                    </b-button>
                 </div>
-                <div class="col-1" v-if="selectedOnderdeel">
-                    <div v-for="sub in filteredSub" v-bind:key="'onderdeel'+sub.subonderdeel_id" @click="getInformation(sub.subonderdeel_id); selectedSub = sub.subonderdeel_id">
+                <div class="col-12" v-if="selectedOnderdeel">
+                    <div class="title"><h3>Categorie</h3><b-button>Voeg toe</b-button></div>
+                    <b-button v-for="sub in filteredSub" 
+                              v-bind:key="'subonderdeel'+sub.subonderdeel_id" 
+                              @click="getInformation(sub.subonderdeel_id); changeSubonderdeel(sub.subonderdeel_id); active_sub = 'subonderdeel'+sub.subonderdeel_id"
+                              v-bind:class="{ 'active':  active_sub == 'subonderdeel'+sub.subonderdeel_id}" >
                       {{sub.sName}}
-                    </div>
+                    </b-button>
                 </div>
-                <div class="col-9" v-if="selectedSub">
-                  <!--  <Texteditor ref="editor" :text="selectedInformation[0].iText"/> -->
+
+            </div>
+                  <b-modal id="modal-3" size="xl" hide-footer hide-header v-if="selectedSub">
+                      <div class="d-block">
+                          <div class="row">
+                              <div class="profile-block col-12" id="sub">
+                                  <carousel 
+                                  :per-page="1" 
+                                  :mouse-drag="false" 
+                                  paginationColor='#000000'
+                                  paginationActiveColor="#999999"
+                                  paginationPosition= "top"
+                                  >
+                                  <slide class="editors" v-for="edit in info" v-bind:key="'info'+edit.iId">
+                                    <ckeditor :editor="editor" v-model="edit.iText" :config="editorConfig"></ckeditor>
+                                    <label>Pagina: </label><input v-model="edit.iPage" :type="'number'" />
+                                    <b-button @click="saveInformation(edit)">Opslaan</b-button>
+                                  </slide>
+                                </carousel>
+                              </div>
+                          </div>
+                      </div>
+                      <div class="buttons">
+                          <b-button class="mt-3" block @click="closeModal()">Sluiten</b-button>
+                      </div>
+                  </b-modal>
+               <div class="col-12" v-if="selectedSub">
+                 <!--   <Texteditor ref="editor" :text="selectedInformation[0].iText"/> -->
                   <carousel 
                     :per-page="1" 
                     :mouse-drag="false" 
@@ -37,10 +75,21 @@
                   </carousel>
                 </div>
                 
-            </div>
           </div>
           <div v-if="setting=='add'">
-            <Texteditor />
+            <div class="profile-block col-6" id="algemeen">
+            <h3>Training</h3>
+            <div class="inputrow"><p>Naam</p><input type="text" v-model="info.name"/></div>
+        </div>
+        <div class="profile-block col-6" id="contact">
+            <h3>Onderdeel</h3>
+            <div class="inputrow"><p>Naam</p><input type="text"  v-model="info.email"/></div>
+        </div>
+        <div class="profile-block col-6" id="werk">
+            <h3>Categorie</h3>
+            <div class="inputrow"><p>Naam</p><input type="text"  v-model="info.function"/></div>
+        </div>
+        <b-button @click="addTraining()">Training toevoegen</b-button>
           </div>
   </div>
 </template>
@@ -75,6 +124,9 @@ export default {
         editorConfig: {// The configuration of the editor.
             },
         editorData: '',
+        active_training: null,
+        active_onderdeel: null,
+        active_sub: null
     }
   },
   methods:{
@@ -105,6 +157,7 @@ export default {
           this.selectedsub = onderdeel;
           HTTP.get('information/'+onderdeel)
           .then(response => {
+            console.log(response.data.info)
            for(var item in response.data.info){
              this.info.push(response.data.info[item])
            }
@@ -122,6 +175,12 @@ export default {
         console.log(this.pageEdit);
         console.log(edit)
         this.info[edit].iPage = this.pageEdit;
+      },
+      closeModal: function(){
+        this.$bvModal.hide('modal-3')
+      },
+      changeSubonderdeel: function(sub){
+          this.selectedSub = sub
       }
 
   },
@@ -207,5 +266,45 @@ a {
 }
 .start-btn{
   padding-bottom: 10px;
+}
+
+#selection .btn{
+  padding: 5px;
+  font-size: 1.3rem;
+  margin: 10px;
+}
+#selection .col-2{
+  display: inline-flex;
+}
+.modal .modal-dialog.modal-xxl {
+    max-width: 95vw !important;
+    height: 95vh;
+}
+
+#modal-3 .modal-body{
+  height: 95vh;
+}
+#modal-3 .modal-body .d-block{
+  height: 88vh;
+}
+#selection .btn{
+  background-color: #0040f0;
+}
+
+#selection .btn.active{
+  background-color: green;
+}
+#selection .title .btn{
+  background-color: #888888;
+  font-size: 0.8rem;
+
+}
+#selection .title h3{
+  display: inline;
+
+}
+#selection .title{
+  padding-top: 20px;
+  padding-left: 10px;
 }
 </style>

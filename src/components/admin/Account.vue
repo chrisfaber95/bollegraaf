@@ -6,10 +6,10 @@
             <div class="row">
                 <div class="col-3"><p>Email</p></div>
                 <div class="col-2"><p>Naam</p></div>
-                <div class="col-2"><p>Woonplaats</p></div>
+                <div class="col-2"><p>Accountrechten</p></div>
                 <div class="col-2"><p>Bedrijf</p></div>
                 <div class="col-1"><p>Telefoon</p></div>
-                <div class="col-1"><p>Voortgang</p></div>
+                <div class="col-1"><p>Trainingen</p></div>
                 <div class="col-1"><p>Bewerken</p></div>
             </div>
             <hr>
@@ -21,7 +21,7 @@
                     {{account.name}} {{account.surname}}
                 </div>
                 <div class="col-xl-2 col-lg-2">
-                    {{account.city}}
+                    {{account.permission_name}}
                 </div>
                 <div class="col-xl-2 col-lg-2">
                     {{account.company}}
@@ -62,8 +62,19 @@
                         </div>
                         <div class="profile-block col-6" id="taal">
                             <h3>Voorkeuren</h3>
-                            <div class="inputrow"><p>Taal</p><input type="text" v-model="selectedUser.Language_id"/></div>
-                            <div class="inputrow"><p>Rechten</p><input type="text" v-model="selectedUser.Permissions_id"/></div>
+                            <div class="inputrow">
+                                <p>Taal</p>
+                                <select v-model="selectedUser.language_id">
+                                    <option v-for="item in filteredLanguage" v-bind:key="item.language_id" v-bind:value="item.language_id">{{item.name}}</option>
+                                </select>
+                            </div>
+                            <div class="inputrow">
+                                <p>Rechten</p>
+                                <select v-model="selectedUser.permission_id">
+                                    <option v-for="item in filteredRights" v-bind:key="item.permission_id" v-bind:value="item.permission_id">{{item.name}}</option>
+                                </select>
+                                {{selectedUser.permission_id}}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -78,7 +89,11 @@
                         <div class="profile-block col-6" id="algemeen" v-if="selectedUser">
                             
                             <div class="row" v-for="training in trainingen" v-bind:key="training.id">
-                                Training: {{training.tName}} -- {{training.oName}} -- {{training.sName}} -- Is visible? <b-form-checkbox v-model="training.isVisible" value="1" unchecked-value="0" @change="updateTraining(training)"></b-form-checkbox>
+                                Training: {{training.tName}} -- {{training.oName}} -- {{training.sName}} -- Is visible? 
+                                <b-form-checkbox v-model="training.isVisible" value="1" unchecked-value="0" @change="updateTraining(training, selectedUser)">
+
+                                </b-form-checkbox>
+                                {{training.isVisible}}
                             </div>
                         </div>
                     </div>
@@ -112,8 +127,17 @@
         </div>
         <div class="profile-block col-6" id="taal">
             <h3>Voorkeuren</h3>
-            <div class="inputrow"><p>Taal</p><input type="text" /></div>
-            <div class="inputrow"><p>Rechten</p><input type="text" /></div>
+            <div class="inputrow"><p>Taal</p>
+                <select v-model="info.language_id">
+                    <option v-for="item in filteredLanguage" v-bind:key="item.language_id" v-bind:value="item.language_id">{{item.name}}</option>
+                </select>
+            </div>
+            <div class="inputrow">
+                <p>Rechten</p>
+                <select v-model="info.permission_id">
+                    <option v-for="item in filteredRights" v-bind:key="item.permission_id" v-bind:value="item.permission_id">{{item.name}}</option>
+                </select>
+            </div>
         </div>
         <b-button @click="addAccount()">Account toevoegen</b-button>
         </div>
@@ -141,10 +165,14 @@ export default {
             'function': '',
             'company': '',
             'company_city': '', 
-            'company_country': ''
+            'company_country': '',
+            'permission_id': '',
+            'language_id': ''
         },
         selectedUser: null,
-        trainingen: null
+        trainingen: null,
+        rights: null,
+        language: null
     }
   },
   methods:{
@@ -166,6 +194,7 @@ export default {
           })
       },
       updateAccounts: function(account){
+          console.log(account)
           HTTP.put('user/update/'+account.user_id+'/', account)
           .then(response => {
             console.log(response.data)
@@ -173,15 +202,16 @@ export default {
           })
       },
       getTrainingen: function(account){
-          HTTP.get('user/'+account.id+'/training/')
+          HTTP.get('/training/user/'+account.user_id)
           .then(response => {
             console.log(response.data)
             this.trainingen = response.data.training
             return response.data.training
           })
       },
-      updateTraining: function(training){
-          HTTP.put('user/'+this.selectedUser.id+'/training/' + training.sId, training)
+      updateTraining: function(training, account){
+          console.log(training)
+          HTTP.put('/training/user/'+account.user_id, training)
           .then(response => {
             console.log(response.data)
           })
@@ -190,16 +220,44 @@ export default {
         this.$bvModal.hide('modal-2')
       },
       changeUser: function(user){
+          console.log(user)
           this.selectedUser = user
+      },
+      getRights: function(){
+          HTTP.get('settings/rights/')
+          .then(response => {
+            this.rights = response.data.rights
+            console.log(this.rights)
+            return this.rights
+          })
+      },
+      getLanguage: function(){
+          HTTP.get('settings/language/')
+          .then(response => {
+            this.language = response.data.language
+            console.log(this.language)
+            return this.language
+          })
       }
 
   },
   mounted(){
       this.getAccounts();
+      this.getRights();
+      this.getLanguage();
  },
  computed:{
      filteredAccounts: function(){
          return this.account
+     },
+     filteredRights: function(){
+         return this.rights
+     },
+     filteredLanguage: function(){
+         return this.language
+     },
+     filteredTraining: function(){
+         return this.trainingen
      }
  },
  watch:{

@@ -13,21 +13,25 @@
         <div class="training-block" v-if="page=='followed'">
            <div class="training" v-for="(training, index) in filteredGevolgd" v-bind:key="training.id" @click="showSub(training)">
                 <font-awesome-icon icon="caret-right" /><b>{{index + 1}}. {{training.tName}}</b>
-                <div class="trainingSub" v-for="(sub, index) in filterOnd(training.training_id)" v-bind:key="sub.oId">
-                    <div class="line">
+                <div class="trainingSub onderdeel" v-for="(sub, index) in filterOnd(training.training_id)" 
+                @click="selectedOnderdeel = sub.onderdeel_id; active_onderdeel  = 'onderdeel'+sub.onderdeel_id"
+                v-bind:key="sub.oId">
+                    <div class="line"
+                     v-bind:class="{ 'active':  active_onderdeel  == 'onderdeel'+sub.onderdeel_id }">
                         <div class="line-tekst">
                             <font-awesome-icon icon="caret-right" /><b>{{index + 1}}. {{sub.oName}}</b>
                         </div>
                     </div>
-                    <div class="trainingSub" v-for="(sub, index) in filterSub(sub.onderdeel_id)" v-bind:key="sub.sId">
-                        <div class="line">
+                    <div class="trainingSub subonderdeel" v-for="(sub, index) in filterSub(sub.onderdeel_id)"
+                        v-bind:key="sub.sId">
+                        <div class="line" v-if="selectedOnderdeel && selectedOnderdeel == sub.onderdeel_id">
                             <div class="line-tekst" v-if="sub.isVisible == 1">
                                 <p>{{index + 1}}. {{sub.sName}}</p>
-                                <router-link :to="'/trainingpage/'+index"><b-button class="start-btn">Start</b-button></router-link>
+                                <router-link :to="'/trainingpage/'+sub.subonderdeel_id"><b-button class="start-btn">Start</b-button></router-link>
                             </div>
-                            <div class="line-tekst" v-if="sub.isVisible == null">
+                            <div class="line-tekst" v-if="sub.isVisible == null || sub.isVisible == 0">
                                 <p>{{index + 1}}. {{sub.sName}}</p>
-                                <router-link :to="'/trainingpage/'+sub.subonderdeel_id"><b-button class="stop-btn">Niet beschikbaar</b-button></router-link>
+                                <router-link :to="''"><b-button class="stop-btn">Niet beschikbaar</b-button></router-link>
                             </div>
                         </div>
                     </div>
@@ -63,16 +67,20 @@ export default {
   ],
   data: function(){
     return{
-      trainingen: [],
-      followed: [],
+        trainingen: [],
+        followed: [],
+        selectedOnderdeel: null,
+        active_onderdeel: null,
     }
   },
   methods:{
     getTrainingen: function(){
-      HTTP.get('training')
-      .then(response =>{
+      HTTP.get('/training/user/'+localStorage.id_token)
+        .then(response => {
+        console.log(response.data)
         this.trainingen = response.data.training
-      })
+        return response.data.training
+        })
     },
     getFollowedTraining: function(){
         HTTP.get('training/user/'+localStorage.id_token)
