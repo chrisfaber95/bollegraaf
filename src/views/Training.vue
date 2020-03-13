@@ -89,13 +89,29 @@ export default {
         })
     },
     filterSub: function(onderdeel){
-            var filteredTraining = []
+         //   var filteredTraining = []
+        //    for(var item in this.trainingen){
+        //        if(this.trainingen[item].onderdeel_id == onderdeel){
+        //            filteredTraining.push(this.trainingen[item]);
+        //        }
+        //    }
+
+            var filtered = []
+            var filteredIds = []
             for(var item in this.trainingen){
                 if(this.trainingen[item].onderdeel_id == onderdeel){
-                    filteredTraining.push(this.trainingen[item]);
+                    if(!filteredIds.includes(this.trainingen[item].subonderdeel_id)){
+                    filtered.push(this.trainingen[item])
+                    filteredIds.push(this.trainingen[item].subonderdeel_id)
+                    }
+                
                 }
             }
-        return filteredTraining;
+            return filtered
+        
+
+
+      //  return filteredTraining;
     },
     filterOnd: function(onderdeel){
             var filteredTraining = []
@@ -124,7 +140,17 @@ export default {
   },
   computed: {
     filteredTraining: function(){
-      return this.trainingen;
+         var filtered = []
+        var filteredIds = []
+        for(var item in this.trainingen){
+         if(!filteredIds.includes(this.trainingen[item].subonderdeel_id)){
+           filtered.push(this.trainingen[item])
+           filteredIds.push(this.trainingen[item].subonderdeel_id)
+         }
+        }
+         return filtered
+        
+     // return this.trainingen;
     },
     filteredGevolgd: function(){
       var filteredFollowed = []

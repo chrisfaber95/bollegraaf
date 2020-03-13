@@ -4,7 +4,7 @@
          <div v-if="setting=='list'">
             <div class="row" id="selection">
                 <div class="col-12">
-                    <div class="title"><h3>Training</h3><b-button>Voeg toe</b-button></div>
+                    <div class="title"><h3>Training</h3><b-input type="text" value="" v-model="newTraining"/>{{newTraining}}<b-button @click="addTraining(newTraining)">Voeg toe</b-button></div>
                     <b-button v-for="training in filteredTrainingen" 
                               v-bind:key="'training'+training.training_id" 
                               @click="selectedTraining = training.training_id; selectedOnderdeel = null; active_onderdeel = null; active_training  = 'training'+training.training_id"
@@ -13,7 +13,7 @@
                     </b-button>
                 </div>
                 <div class="col-12" v-if="selectedTraining">
-                    <div class="title"><h3>Onderdeel</h3><b-button>Voeg toe</b-button></div>
+                    <div class="title"><h3>Onderdeel</h3><b-input type="text" v-model="newOnderdeel" /><b-button @click="addOnderdeel(newOnderdeel, selectedTraining)">Voeg toe</b-button></div>
                     <b-button v-for="onderdeel in filteredOnderdeel" 
                               v-bind:key="'onderdeel'+onderdeel.onderdeel_id" 
                               @click="selectedOnderdeel = onderdeel.onderdeel_id; selectedSub = null; active_sub = null; active_onderdeel = 'onderdeel'+onderdeel.onderdeel_id"
@@ -22,7 +22,7 @@
                     </b-button>
                 </div>
                 <div class="col-12" v-if="selectedOnderdeel">
-                    <div class="title"><h3>Categorie</h3><b-button>Voeg toe</b-button></div>
+                    <div class="title"><h3>Categorie</h3><b-input type="text" v-model="newSubonderdeel"/><b-button @click="addSubonderdeel(newSubonderdeel, selectedOnderdeel)">Voeg toe</b-button></div>
                     <b-button v-for="sub in filteredSub" 
                               v-bind:key="'subonderdeel'+sub.subonderdeel_id" 
                               @click="getInformation(sub.subonderdeel_id); changeSubonderdeel(sub.subonderdeel_id); active_sub = 'subonderdeel'+sub.subonderdeel_id"
@@ -126,7 +126,10 @@ export default {
         editorData: '',
         active_training: null,
         active_onderdeel: null,
-        active_sub: null
+        active_sub: null,
+        newOnderdeel: null,
+        newSubonderdeel: null,
+        newTraining: null
     }
   },
   methods:{
@@ -181,6 +184,30 @@ export default {
       },
       changeSubonderdeel: function(sub){
           this.selectedSub = sub
+      },
+      addTraining: function(training){
+        var data = []
+        data.push(training) 
+         HTTP.post('training/', data)
+          .then(response => {
+            console.log(response.data)
+          })
+      },
+      addOnderdeel: function(onderdeel, selected){
+        var data = []
+        data.push(onderdeel) 
+         HTTP.post('training/onderdeel/'+selected, data)
+          .then(response => {
+            console.log(response.data)
+          })
+      },
+      addSubonderdeel: function(sub, selected){
+        var data = []
+        data.push(sub) 
+         HTTP.post('training/subonderdeel/'+selected, data)
+          .then(response => {
+            console.log(response.data)
+          })
       }
 
   },

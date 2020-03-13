@@ -88,7 +88,7 @@
                     <div class="row">
                         <div class="profile-block col-6" id="algemeen" v-if="selectedUser">
                             
-                            <div class="row" v-for="training in trainingen" v-bind:key="training.id">
+                            <div class="row" v-for="training in filteredTraining" v-bind:key="training.subonderdeel_id">
                                 Training: {{training.tName}} -- {{training.oName}} -- {{training.sName}} -- Is visible? 
                                 <b-form-checkbox v-model="training.isVisible" value="1" unchecked-value="0" @change="updateTraining(training, selectedUser)">
 
@@ -172,7 +172,8 @@ export default {
         selectedUser: null,
         trainingen: null,
         rights: null,
-        language: null
+        language: null,
+        lastSub: null
     }
   },
   methods:{
@@ -257,7 +258,17 @@ export default {
          return this.language
      },
      filteredTraining: function(){
-         return this.trainingen
+         //return this.trainingen
+         var filtered = []
+        var filteredIds = []
+        for(var item in this.trainingen){
+         if(!filteredIds.includes(this.trainingen[item].subonderdeel_id)){
+           filtered.push(this.trainingen[item])
+           filteredIds.push(this.trainingen[item].subonderdeel_id)
+         }
+       }
+       console.log(filtered)
+         return filtered
      }
  },
  watch:{
