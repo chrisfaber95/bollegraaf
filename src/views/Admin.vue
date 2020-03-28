@@ -13,7 +13,7 @@
 
                     <h3>Trainingen</h3>
                     <b-button @click="changeTopic('training', 'list')">Overzicht</b-button>
-                    <b-button @click="changeTopic('training', 'add')">Toevoegen</b-button>
+                   <!-- <b-button @click="changeTopic('training', 'add')">Toevoegen</b-button>-->
                     <b-button @click="changeTopic('training', 'suggesties')">Suggesties</b-button>
                         <hr />
                 

@@ -10,27 +10,39 @@
                     <div class="col-4">
                         <b>Afzender</b>
                     </div>
-                    <div class="col-6">
+                    <div class="col-5">
                         <b>Onderwerp</b>
                     </div>
-                    <div class="col-2">
+                    <div class="col-3">
                         <b>Ontvangen</b>
                     </div>
                 </div>
                 <hr>
-                <div class="row" v-for="item in filteredMessages" v-bind:key="item.id" @click="selectedMessage = item">
+                <div class="row" v-for="item in filteredMessages" v-bind:key="item.id" @click="selectedMessage = item; if(item.isOpened == 0)updateMessage(item)">
                     <div class="col-4">
                         {{item.fromName}} {{item.fromSurname}}
                     </div>
-                    <div class="col-6">
+                    <div class="col-5">
                         {{item.mSubject}}
                     </div>
-                    <div class="col-2">
+                    <div class="col-3">
                         {{item.mDate}}
                     </div>
                 </div>
             </div>
-           <Message />
+           <div class="message">
+                <div class="col-6" v-if="selectedMessage">
+                    <p>Datum: {{selectedMessage.mDate}}</p>
+                    <p>Afzender: {{selectedMessage.fromName + " " + selectedMessage.fromSurname}}</p>
+                    <p>Onderwerp: {{selectedMessage.mSubject}}</p>
+                    <hr>
+                    <p>Bericht: </p>
+                    {{selectedMessage.mContent}}
+                </div>
+                <div class="col-6" v-if="!selectedMessage">
+                <p>Selecteer een email om deze te openen.</p>
+                </div>
+            </div>
         </div>
         </div>
     </div>
@@ -41,14 +53,13 @@
 // @ is an alias to /src
 //import Trainingitem from '@/components/Trainingitem.vue'
 import Header from '@/components/general/Header.vue'
-import Message from '@/components/messages/Message.vue'
+//import Message from '@/components/messages/Message.vue'
 import {HTTP} from '@/assets/scripts/http-common.js'
 
 export default {
   name: 'Home',
   components: {
       Header,
-      Message
   },
   data: function(){
     return{
@@ -62,7 +73,15 @@ export default {
          .then(response =>{
             console.log(response)
          this.messages = response.data.message;
-      })
+        })
+      },
+      updateMessage: function(message){
+          message.isOpened = 1;
+          console.log(message)
+        HTTP.put('/message/'+message.mId, message)
+            .then(response => {
+            console.log(response.data)
+        })
       }
   },
   mounted() {

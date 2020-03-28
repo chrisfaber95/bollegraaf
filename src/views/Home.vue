@@ -3,20 +3,20 @@
     <Header />
     <div class="container-fluid">
       <div class="row">
-        <div class="col-7">
+        <div class="col-lg-7">
           <div class="trainingfollow">
             <h3>Mijn trainingen</h3>
             <hr>
-            <Training :followed="true" :amount="1"/>
-            <router-link :to="{ name: 'Trainingen', params: {page: 'followed' }}" :tag="link">Bekijk al mijn trainingen</router-link>
+            <Training followed="true"/>
+            <router-link :to="{ name: 'Training', params: {page: 'followed' }}" :tag="link">Bekijk al mijn trainingen</router-link>
           </div>
           <div class="trainingall">
             <h3>Alle trainingen</h3>
             <hr>
-            <Training :followed="false"  :amount="all"/>
+            <Training followed="false"  :amount="all"/>
           </div>
         </div>
-        <div class="col-5">
+        <div class="col-lg-5">
           <div class="voortgang">
             <h3>Mijn voortgang</h3>
             <Progress />
@@ -73,8 +73,6 @@ export default {
     }
   },
   created(){
-    this.getTrainingen()
-    this.getFollowedTraining()
   },
   computed: {
     filteredTraining: function(){
@@ -106,7 +104,7 @@ export default {
     background-color: #ffffff;
     min-height: 100vh;
   }
-  .col-7, .col-5{
+  .col-lg-7, .col-lg-5{
     padding-left: 40px;
     padding-right: 40px;
   }

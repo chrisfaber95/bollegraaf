@@ -112,10 +112,12 @@ export default{
     },
     updateInfo(){
         const data = JSON.parse(localStorage.getItem("userinfo"))
-        
-        HTTP.put("user/update/" + data.id, data)
+        const id = JSON.parse(localStorage.getItem('id_token'))
+        HTTP.put("user/update/" + id, data)
         .then(response => {
             console.log(response.data)
+            localStorage.setItem('userinfo', JSON.stringify(response.data.user))
+            this.user.info.userinfo = JSON.parse(localStorage.getItem('userinfo'))
         })
         .catch(e => {
             console.log(e)

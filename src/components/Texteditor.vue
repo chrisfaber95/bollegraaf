@@ -28,6 +28,7 @@ export default {
     },
     computed: {
       editText(){
+        console.log()
         return this.text
       }
     },

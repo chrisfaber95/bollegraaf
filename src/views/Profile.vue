@@ -38,7 +38,7 @@
               <b-button @click="saveInfo()">Wijzigingen opslaan</b-button>
         </div>
         <div class="profile-block" id="info-btn">
-            <router-link to='/instellingen' ><b-button>Gegevens wijzigen</b-button></router-link>
+            <router-link to='/settings' ><b-button>Gegevens wijzigen</b-button></router-link>
         </div>
     </div>
   </div>

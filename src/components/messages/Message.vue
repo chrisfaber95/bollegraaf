@@ -1,12 +1,15 @@
 <template>
     <div class="message">
-        <div class="col-6" v-if="selectedMessage">
-            <p>Datum: {{selectedMessage.mDate}}</p>
-            <p>Afzender: {{selectedMessage.fromName + " " + selectedMessage.fromSurname}}</p>
-            <p>Onderwerp: {{selectedMessage.mSubject}}</p>
+        <div class="col-6" v-if="message">
+            <p>Datum: {{message.mDate}}</p>
+            <p>Afzender: {{message.fromName + " " + message.fromSurname}}</p>
+            <p>Onderwerp: {{message.mSubject}}</p>
             <hr>
             <p>Bericht: </p>
-            {{selectedMessage.mContent}}
+            {{message.mContent}}
+        </div>
+        <div class="col-6" v-if="!message">
+          <p>Selecteer een email om deze te openen.</p>
         </div>
     </div>
 </template>
@@ -22,7 +25,17 @@ export default {
   mounted(){
  },
  methods:{
- }
+    getMessage: function(){
+  
+    }
+ },
+ computed: {
+   filteredMessage: function(){
+     console.log(this.$parent.get.selectedMessage)
+     var message = this.$parent.$data.selectedMessage;
+     return message;
+   }
+ },
 }
 </script>
 

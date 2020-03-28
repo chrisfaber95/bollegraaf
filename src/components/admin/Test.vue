@@ -1,32 +1,40 @@
 <template>
   <div class="training">
-        <h2>Tests</h2>
-        {{setting}}
-
-        <p>https://froala.com/wysiwyg-editor/docs/concepts/</p>
-        <p>https://github.com/moodleou/moodle-qtype_ddimageortext/</p>
-        <p>https://seregpie.github.io/VueDragDrop/</p>
+        <h2>Quiz questions</h2>
          <div v-if="setting=='list'">
-            <div class="row" v-for="test in filteredTests" v-bind:key="test.id">
+            <div class="row" v-for="question in filteredQuestions" v-bind:key="question.id">
                 <div class="col-1">
-                    {{test.sId}}
+                    {{question.question_id}}
                 </div>
                 <div class="col-2">
-                    {{test.tName}}
+                    {{question.question_text}}
                 </div>
                 <div class="col-2">
-                    {{test.oName}}
+                    {{question.tName}}
                 </div>
                 <div class="col-2">
-                    {{test.oTime}}
-                </div>
-                <div class="col-2">
-                    {{test.sName}}
+                    {{question.sName}}
                 </div>
                 <div class="col-1">
-                    <p>X</p>
+                    <b-button  v-b-modal.modal-question class="bewerk-btn" @click="changeQuestion(question)">Bewerk</b-button>
                 </div>
             </div>
+
+             <b-modal id="modal-question" size="xl" hide-footer hide-header v-if="selectedQuestion">
+                <div class="d-block">
+                    <div class="row">
+                        <div class="profile-block col-6" id="algemeen" v-if="selectedQuestion">
+                            {{selectedQuestion}}
+                                <b-form-checkbox v-model="selectedQuestion.isVisible" value="1" unchecked-value="0" @change="updateTraining(training, selectedQuestion)">
+                                </b-form-checkbox>
+                        </div>
+                    </div>
+                </div>
+                <div class="buttons">
+                    <b-button class="mt-3" block @click="closeModal()">Wijzigingen opslaan</b-button>
+                    <b-button class="mt-3" block @click="closeModal()">Sluiten</b-button>
+                </div>
+            </b-modal>
         </div>
   </div>
 </template>
@@ -40,26 +48,46 @@ export default {
   ],
   data: function(){
     return{
-        tests: []
+        questions: [],
+        selectedQuestion: null
     }
   },
   methods:{
       getTests: function(){
-          HTTP.get('test')
+          HTTP.get('/questions')
           .then(response => {
             console.log(response.data)
-            this.tests = response.data.test
-            return response.data.test
+            this.questions = response.data.question
+            return this.questions
           })
       },
+      closeModal: function(){
+        this.$bvModal.hide('modal-question')
+      },
+      changeQuestion: function(sub){
+          this.selectedQuestion = sub
+      }
 
   },
   mounted(){
       this.getTests();
  },
  computed:{
-     filteredTests: function(){
-         return this.tests
+     filteredQuestions: function(){
+         var filtered = []
+       var filteredIds = []
+       for(var item in this.questions){
+         if(!filteredIds.includes(this.questions[item].question_id)){
+           filtered.push(this.questions[item])
+           filteredIds.push(this.questions[item].question_id)
+         }
+       }
+       console.log(filtered)
+         return filtered
+        
+       //  return this.questions
+
+
      }
  },
  watch:{
