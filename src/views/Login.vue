@@ -6,7 +6,7 @@
         <b-input type="text" placeholder="Gebruikersnaam" v-model="userLogin.email"/>
         <b-input type="password" placeholder="Wachtwoord" v-model="userLogin.pass"/>
         <b-button @click="login()">Inloggen</b-button>
-        <b-button @click="register()">register</b-button> 
+       <!-- <b-button @click="register()">register</b-button> -->
     </div>
   </div>
 </template>
@@ -68,11 +68,8 @@ p{
 button{
     margin: 20px 0;
 }
-</style>
-<style>
 
 #app{
     overflow: hidden;
 }
-
 </style>

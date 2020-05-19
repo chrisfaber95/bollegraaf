@@ -13,6 +13,7 @@
   color: #2c3e50;
   height: 100vh;
   width: 100vw;
+	overflow: scroll;
   overflow-x: hidden;
   background-color: rgba(20,20,255,0.4);
 }

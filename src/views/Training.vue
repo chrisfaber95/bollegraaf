@@ -11,7 +11,7 @@
             </div>
         </div>
         <div class="training-block" v-if="page=='followed'">
-           <div class="training" v-for="(training, index) in filteredGevolgd" v-bind:key="training.id" @click="showSub(training)">
+           <div class="training" v-for="(training, index) in filteredGevolgd" v-bind:key="training.training_id" @click="showSub(training)">
                 <font-awesome-icon icon="caret-right" /><b>{{index + 1}}. {{training.tName}}</b>
                 <div class="trainingSub onderdeel" v-for="(sub, index) in filterOnd(training.training_id)" 
                 @click="selectedOnderdeel = sub.onderdeel_id; active_onderdeel  = 'onderdeel'+sub.onderdeel_id"
@@ -112,61 +112,61 @@ export default {
 
 
       //  return filteredTraining;
-    },
-    filterOnd: function(onderdeel){
-            var filteredTraining = []
-            var idArr = []
-            for(var item in this.trainingen){
-                if(this.trainingen[item].training_id == onderdeel && !idArr.includes(this.trainingen[item].onderdeel_id)){
-                    filteredTraining.push(this.trainingen[item]);
-                    idArr.push(this.trainingen[item].onderdeel_id)
-                }
-            }
-            console.log(filteredTraining)
-        return filteredTraining;
-    },
-    showSub: function(training){
-        if(training.show == true){
-            training.show = false
-        }
-        else{
-            training.show = true
-        }
-    }
-  },
-  created(){
-    this.getTrainingen()
-    this.getFollowedTraining()
-  },
-  computed: {
-    filteredTraining: function(){
-         var filtered = []
-        var filteredIds = []
-        for(var item in this.trainingen){
-         if(!filteredIds.includes(this.trainingen[item].subonderdeel_id)){
-           filtered.push(this.trainingen[item])
-           filteredIds.push(this.trainingen[item].subonderdeel_id)
-         }
-        }
-         return filtered
+	},
+	filterOnd: function(onderdeel){
+		var filteredTraining = []
+		var idArr = []
+		for(var item in this.trainingen){
+			if(this.trainingen[item].training_id == onderdeel && !idArr.includes(this.trainingen[item].onderdeel_id)){
+				filteredTraining.push(this.trainingen[item]);
+				idArr.push(this.trainingen[item].onderdeel_id)
+			}
+		}
+		console.log(filteredTraining)
+		return filteredTraining;
+	},
+	showSub: function(training){
+		if(training.show == true){
+			training.show = false
+		}
+		else{
+			training.show = true
+		}
+	}
+},
+created(){
+	this.getTrainingen()
+	this.getFollowedTraining()
+},
+computed: {
+	filteredTraining: function(){
+		var filtered = []
+		var filteredIds = []
+		for(var item in this.trainingen){
+			if(!filteredIds.includes(this.trainingen[item].training_id)){
+				filtered.push(this.trainingen[item])
+				filteredIds.push(this.trainingen[item].training_id)
+			}
+		}
+		return filtered
         
-     // return this.trainingen;
-    },
-    filteredGevolgd: function(){
-      var filteredFollowed = []
-      var idArr = []
-      for(var item in this.trainingen){
-        if(filteredFollowed.length == 0){
-            filteredFollowed.push(this.trainingen[item])
-            idArr.push(this.trainingen[item].training_id)
-        }
-        else if(!idArr.includes(this.trainingen[item].training_id)){
-            filteredFollowed.push(this.trainingen[item])
-            idArr.push(this.trainingen[item].training_id)
-        }
-      }
-      console.log(filteredFollowed)
-      return filteredFollowed
+		// return this.trainingen;
+	},
+	filteredGevolgd: function(){
+		var filteredFollowed = []
+		var idArr = []
+		for(var item in this.trainingen){
+			if(filteredFollowed.length == 0){
+				filteredFollowed.push(this.trainingen[item])
+				idArr.push(this.trainingen[item].training_id)
+			}
+			else if(!idArr.includes(this.trainingen[item].training_id)){
+				filteredFollowed.push(this.trainingen[item])
+				idArr.push(this.trainingen[item].training_id)
+			}
+		}
+		console.log(filteredFollowed)
+		return filteredFollowed
      // return this.followed;
     },
     newfilteredTraining: function(trainingId){
@@ -217,6 +217,9 @@ export default {
 }
 .trainingSub{
     width:100%;
+}
+.line-tekst:hover{
+	cursor: pointer;
 }
 .line{
     border-bottom: 1px solid #999999;

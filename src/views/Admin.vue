@@ -5,23 +5,23 @@
         <h2 class="pagetitle">Admin</h2>
         <div class="admin-block">
             <div class="row">  
-                <div class="col-2">
-                    <h3>Accounts</h3>
+                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12">
+                    <h3><font-awesome-icon icon="users" /></h3><h4>Users</h4>
                     <b-button @click="changeTopic('account', 'list')">Overzicht</b-button>
                     <b-button @click="changeTopic('account', 'add')">Toevoegen</b-button>
                         <hr />
 
-                    <h3>Trainingen</h3>
+                    <h3><font-awesome-icon icon="book-open" /></h3><h4>Training</h4>
                     <b-button @click="changeTopic('training', 'list')">Overzicht</b-button>
                    <!-- <b-button @click="changeTopic('training', 'add')">Toevoegen</b-button>-->
                     <b-button @click="changeTopic('training', 'suggesties')">Suggesties</b-button>
                         <hr />
                 
-                    <h4>Toetsen</h4>
+				<h3><font-awesome-icon icon="file" /></h3><h4>Exam</h4>
                     <b-button @click="changeTopic('test', 'list')">Overzicht</b-button>
                     <b-button @click="changeTopic('test', 'add')">Toevoegen</b-button>
                 </div>
-                <div class="col-10">
+                <div class="col-xl-10 col-lg-10 col-md-12 col-sm-12 col-xs-12">
                     <div class="topic-block">
                         <Adminaccount :setting ="setting"  v-if="topic=='account'"/>
                         <Admintraining  :setting="setting"  v-if="topic=='training'"/>

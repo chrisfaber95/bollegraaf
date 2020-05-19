@@ -9,12 +9,13 @@ import BootstrapVue from 'bootstrap-vue'
 import 'bootstrap'
 
 import 'bootstrap/scss/bootstrap.scss'
+import ToggleSwitch from 'vuejs-toggle-switch'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faCaretRight } from '@fortawesome/free-solid-svg-icons'
+import { faCaretRight, faUsers, faBookOpen, faFile } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
-library.add(faCaretRight)
+library.add(faCaretRight, faUsers, faBookOpen, faFile)
  
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 
@@ -22,6 +23,8 @@ Vue.config.productionTip = false
 
 Vue.use(BootstrapVue)
 Vue.use(CKEditor)
+Vue.use(ToggleSwitch)
+
 
 new Vue({
   router,

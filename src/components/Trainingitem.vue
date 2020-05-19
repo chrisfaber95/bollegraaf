@@ -1,7 +1,7 @@
 <template>
   <div class="training row">
         <div class="trainingimg">
-            <img class="img-fluid" :src="imageUrl(training.tImage)">
+          <img v-if="training.tImage != '' || training.tImage != ' ' || training.tImage != null" class="img-fluid" :src="imageUrl(training.tImage)"/>
         </div>
         <div class="traininginfo" v-if=followed>
             <span>Training: {{training.tName}}</span>
@@ -61,7 +61,9 @@ export default {
  },
  methods:{
    imageUrl: function(pet){
-     return require('../assets/Afbeeldingen_vierkant/' + pet)
+	console.log(pet)
+     //return require('../assets/Afbeeldingen_vierkant/' + pet)
+	return true
    },
    countSubs: function(){
      if(this.$props.training.lastSubonderdeel){

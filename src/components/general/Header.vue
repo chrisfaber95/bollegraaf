@@ -195,6 +195,9 @@ nav{
     background-color: #454545 !important;
     padding: 0;
 }
+#navbar .row{
+    margin: 0;
+}
 
 .navbar-nav .nav-item{
     background-color: #656565;

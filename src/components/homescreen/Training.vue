@@ -81,9 +81,15 @@ export default {
       trainingen: []
     }
   },
- methods:{
-   imageUrl: function(pet){
-     return require('@/assets/Afbeeldingen_vierkant/' + pet)
+methods:{
+	imageUrl: function(pet){
+		console.log
+		if(pet != '' || pet != ' ' || pet != null){
+			return require('@/assets/Afbeeldingen_vierkant/afbeelding_pers.jpg')
+		}
+		else{
+			return require('@/assets/Afbeeldingen_vierkant/' + pet)			
+		}
    },
    countSubs: function(){
    //  if(this.$props.training.lastSubonderdeel){
@@ -101,7 +107,7 @@ export default {
      })
    },
    getAllTraining: function(){
-     HTTP.get('training/')
+     HTTP.get('training/user/'+localStorage.id_token)
      .then(response =>{
        console.log(response)
        this.trainingen = response.data.training
@@ -123,7 +129,15 @@ export default {
       return lockedNumber;
     },
     filteredNotSubbedTraining: function(){
-      return this.trainingen;
+		var filtered = []
+		var filteredIds = []
+		for(var item in this.trainingen){
+			if(!filteredIds.includes(this.trainingen[item].training_id)){
+				filtered.push(this.trainingen[item])
+				filteredIds.push(this.trainingen[item].training_id)
+			}
+		}
+		return filtered
     }
  }
 }

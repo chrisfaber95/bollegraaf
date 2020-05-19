@@ -4,35 +4,35 @@
         <hr>
         <div v-if="setting=='list'">
             <div class="row">
-                <div class="col-3"><p>Email</p></div>
-                <div class="col-2"><p>Naam</p></div>
-                <div class="col-2"><p>Accountrechten</p></div>
-                <div class="col-2"><p>Bedrijf</p></div>
-                <div class="col-1"><p>Telefoon</p></div>
-                <div class="col-1"><p>Trainingen</p></div>
-                <div class="col-1"><p>Bewerken</p></div>
+                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-xs-3"><p>Email</p></div>
+                <div class="col-xl-2 col-lg-2 col-md-3 col-sm-3 col-xs-3"><p>Naam</p></div>
+                <div class="col-xl-2 col-lg-2 hidden-md-down"><p>Bedrijf</p></div>
+                <div class="col-xl-1 col-lg-1 hidden-md-down"><p>Telefoon</p></div>
+                <div class="col-xl-2 col-lg-2 hidden-md-down"><p>Accountrechten</p></div>
+                <div class="col-xl-1 col-lg-1 hidden-md-down"><p>Trainingen</p></div>
+                <div class="col-xl-1 col-lg-1 hidden-md-down"><p>Bewerken</p></div>
             </div>
             <hr>
-            <div class="row" v-for="account in filteredAccounts" v-bind:key="account.id">
-                <div class="col-xl-3 col-lg-3">
+            <div class="row accountrow" v-for="account in filteredAccounts" v-bind:key="account.id">
+                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-xs-3">
                     {{account.email}}
                 </div>
-                <div class="col-xl-2 col-lg-2">
+                <div class="col-xl-2 col-lg-2 col-md-3 col-sm-3 col-xs-3">
                     {{account.name}} {{account.surname}}
                 </div>
-                <div class="col-xl-2 col-lg-2">
-                    {{account.permission_name}}
-                </div>
-                <div class="col-xl-2 col-lg-2">
+                <div class="col-xl-2 col-lg-2 col-md-3 col-sm-3 col-xs-3">
                     {{account.company}}
                 </div>
-                <div class="col-xl-1 col-lg-1">
+                <div class="col-xl-1 col-lg-1 col-md-3 col-sm-3 col-xs-3">
                     {{account.privephone}}
                 </div>
-                <div class="col-xl-1 col-lg-1">
+                <div class="col-xl-2 col-lg-2 col-md-3 col-sm-3 col-xs-3">
+                    {{account.permission_name}}
+                </div>
+                <div class="col-xl-1 col-lg-1 col-md-3 col-sm-3 col-xs-3">
                     <b-button  v-b-modal.modal-3 class="bewerk-btn" @click="changeUser(account); getTrainingen(account);">Openen</b-button>
                 </div>
-                <div class="col-xl-1 col-lg-1">
+                <div class="col-xl-1 col-lg-1 col-md-3 col-sm-3 col-xs-3">
                     <b-button  v-b-modal.modal-2 class="bewerk-btn" @click="changeUser(account)">Bewerk</b-button>
                 </div>
                 <hr />
@@ -191,6 +191,8 @@ export default {
           .then(response => {
             console.log(response.data)
             this.account = response.data.user
+			alert("accounts added");
+			this.getAccounts();
             return response.data.user
           })
       },
@@ -273,7 +275,7 @@ export default {
  },
  watch:{
      account: function(){
-         console.log("accounts added");
+        
      }
  }
 }
@@ -329,5 +331,8 @@ a {
     padding: 0;
     margin: 0;
     background-color: rgba(0,0,0,0);
+}
+.accountrow{
+	overflow-wrap: break-word;	
 }
 </style>
