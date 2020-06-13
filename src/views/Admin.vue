@@ -113,4 +113,11 @@ export default {
   #progress{
       width: 33%;
   }
+	
+.btn{
+	background-color: #96BF31;
+}
+.btn:hover{
+	background-color: #203780;
+}
 </style>

@@ -53,7 +53,7 @@ export default{
             email: email,
             pass: pass
         }
-        HTTP.post("user/register", data)
+        HTTP.post("user/add", data)
         .then(response => {
             console.log(response)
         })

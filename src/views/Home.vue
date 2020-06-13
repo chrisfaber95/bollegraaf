@@ -1,36 +1,33 @@
 <template>
-  <div class="home">
+<div class="home">
     <Header />
     <div class="container-fluid">
-      <div class="row">
-        <div class="col-lg-7">
-          <div class="trainingfollow">
-            <h3>Mijn trainingen</h3>
-            <hr>
-            <Training followed="true"/>
-            <router-link :to="{ name: 'Training', params: {page: 'followed' }}" :tag="link">Bekijk al mijn trainingen</router-link>
-          </div>
-          <div class="trainingall">
-            <h3>Alle trainingen</h3>
-            <hr>
-            <Training followed="false"  :amount="all"/>
-          </div>
-        </div>
-        <div class="col-lg-5">
-          <div class="voortgang">
-            <h3>Mijn voortgang</h3>
-            <Progress />
-            <p>Bekijk de hele voortgang</p>
-          </div>
-          <div class="Eindtoetsen">
-            <h3>Eindtoetsen</h3>
-            <p>Er zijn eindtoetsen beschikbaar</p>
-            <Quiz/>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+		<div class="row">
+			<div class="col-lg-7">
+				<div class="trainingfollow">
+					<h3>Mijn trainingen</h3>
+					<hr>
+					<div class="trainingblock" v-for="item in filteredTraining" v-bind:key="item.training_id">
+						<Training v-bind:training="item"/>
+					</div>					
+					<router-link :to="{ name: 'Training'}" :tag="link">Bekijk al mijn trainingen</router-link>
+				</div>
+			</div>
+			<div class="col-lg-5">
+				<div class="voortgang">
+					<h3>Mijn voortgang</h3>
+					<Progress />
+					<p>Bekijk de hele voortgang</p>
+				</div>
+				<div class="Eindtoetsen">
+					<h3>Eindtoetsen</h3>
+					<p>Er zijn eindtoetsen beschikbaar</p>
+					<Quiz/>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
 </template>
 
 <script>
@@ -72,11 +69,23 @@ export default {
       })
     }
   },
-  created(){
-  },
+	created(){
+	},
+	mounted(){
+	this.getTrainingen()
+	},
   computed: {
     filteredTraining: function(){
-      return this.trainingen;
+      var filtered = []
+		var filteredIds = []
+		for(var item in this.trainingen){
+			if(!filteredIds.includes(this.trainingen[item].training_id)){
+				filtered.push(this.trainingen[item])
+				filteredIds.push(this.trainingen[item].training_id)
+			}
+		}
+		return filtered
+        
     },
     filteredGevolgd: function(){
       const filteredFollowed = []

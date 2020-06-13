@@ -25,6 +25,7 @@ Vue.use(BootstrapVue)
 Vue.use(CKEditor)
 Vue.use(ToggleSwitch)
 
+//global.$ = $
 
 new Vue({
   router,

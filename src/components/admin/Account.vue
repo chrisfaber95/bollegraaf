@@ -4,13 +4,13 @@
         <hr>
         <div v-if="setting=='list'">
             <div class="row">
-                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-xs-3"><p>Email</p></div>
-                <div class="col-xl-2 col-lg-2 col-md-3 col-sm-3 col-xs-3"><p>Naam</p></div>
-                <div class="col-xl-2 col-lg-2 hidden-md-down"><p>Bedrijf</p></div>
-                <div class="col-xl-1 col-lg-1 hidden-md-down"><p>Telefoon</p></div>
-                <div class="col-xl-2 col-lg-2 hidden-md-down"><p>Accountrechten</p></div>
-                <div class="col-xl-1 col-lg-1 hidden-md-down"><p>Trainingen</p></div>
-                <div class="col-xl-1 col-lg-1 hidden-md-down"><p>Bewerken</p></div>
+                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-xs-3"><b>Email</b></div>
+                <div class="col-xl-2 col-lg-2 col-md-3 col-sm-3 col-xs-3"><b>Naam</b></div>
+                <div class="col-xl-2 col-lg-2 hidden-md-down"><b>Bedrijf</b></div>
+                <div class="col-xl-1 col-lg-1 hidden-md-down"><b>Telefoon</b></div>
+                <div class="col-xl-2 col-lg-2 hidden-md-down"><b>Accountrechten</b></div>
+                <div class="col-xl-1 col-lg-1 hidden-md-down"><b>Trainingen</b></div>
+                <div class="col-xl-1 col-lg-1 hidden-md-down"><b>Bewerken</b></div>
             </div>
             <hr>
             <div class="row accountrow" v-for="account in filteredAccounts" v-bind:key="account.id">
@@ -328,11 +328,20 @@ a {
     margin-bottom: 2px;
 }
 .bewerk-btn{
-    padding: 0;
-    margin: 0;
+    padding: 5px;
+    margin: 5px;
     background-color: rgba(0,0,0,0);
 }
 .accountrow{
+  margin: auto;
 	overflow-wrap: break-word;	
+	border-bottom: 1px solid #cccccc
+}
+
+.btn.bewerk-btn{
+	background-color: #96BF31;
+}
+.btn.bewerk-btn:hover{
+	background-color: #203780;
 }
 </style>

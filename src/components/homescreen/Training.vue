@@ -1,60 +1,37 @@
 <template>
-  <div class="training row">
-      <div class="followed" v-if="followed == 'true'">
-        <div class="traininginfo"  v-for="training in filteredTraining" v-bind:key="training.sId">
-            <div class="trainingimg">
-              <img class="img-fluid" :src="imageUrl(training.tImage)">
-            </div>
-            <div class="infotext">
-              <span>Training: {{training.tName}}</span>
-              <hr>
-              <div class="row">
-                  <div class="col-lg-6">
-                      <p>Trainingsprogramma:{{training.tName}}</p>
-                      <p>Onderdeel: {{training.oName}}</p>
-                      <p>Training: {{training.sName}}</p>
-                      <p>Tijdsduur: {{training.time}}</p>
-                  </div>
-                  <div class="col-lg-6">
-                      <span>Inhoud van deze training</span>
-                      <p></p>
-                  </div>
-              </div>
-              <div class="row">
-                <div class="col-lg-8">
-                  <b-progress :value="training.percentage_finished" :max="100" show-progress animated></b-progress>
-                </div>
-                <div class="col-lg-4 start-btn">
-                  <b-button class="">Hervat training</b-button> 
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      <div class='notfollowed' v-if="followed == 'false'">
-        <div class="traininginfo"  v-for="training in filteredNotSubbedTraining" v-bind:key="training.sId">
-            <div class="trainingimg">
-              <img class="img-fluid" :src="imageUrl(training.tImage)">
-            </div>
-            <div class="infotext">
-              <span>Training: {{training.tName}} niet gevolgd</span>
-              <hr>
-              <div class="row">
-                  <div class="col-lg-6">
-                      <p>Onderdelen: {{training.tName}}</p>
-                      <p>Trainingen: {{training.tName}}</p>
-                      <p>Tijdsduur: {{training.tName}}</p>
-                      <p>Eindtoets: 1</p>
-                  </div>
-                  <div class="col-lg-6">
-                      <span>Inhoud van deze training</span>
-                      <p>..........</p>
-                  </div>
-              </div>
-            </div>
-        </div>
-      </div>
-  </div>
+	<div class="training row">
+		<div class="trainingimg">
+			<img class="img-fluid" :src="imageUrl(training.tImage)"/>
+		</div>
+		<div class="infotext">			
+			<div class="row">
+				<div class="col-lg-6">
+					<span><b>Training:</b> {{training.tName}}</span>
+					<hr>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-lg-6">
+					<p><b>Trainingsprogramma:</b> {{training.tName}}</p>
+					<p><b>Onderdeel:</b> {{training.oName}}</p>
+					<p><b>Training:</b> {{training.sName}}</p>
+					<p><b>Tijdsduur:</b> {{training.time}}</p>
+				</div>
+				<div class="col-lg-6">
+					<span>Inhoud van deze training</span>
+					<p></p>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-lg-8">
+					<b-progress :value="training.percentage_finished" :max="100" show-progress animated></b-progress>
+				</div>
+				<div class="col-lg-4 start-btn">
+					<b-button class="">Hervat training</b-button> 
+				</div>
+			</div>
+		</div>
+	</div>
 </template>
 
 <script>
@@ -63,7 +40,7 @@ import {HTTP} from '@/assets/scripts/http-common.js'
 export default {
   name: 'HelloWorld',
   props: [
-    'followed'
+    'training'
   ],
   mounted(){
     if(this.followed == "true"){
@@ -159,27 +136,31 @@ li {
 a {
   color: #42b983;
 }
+hr{
+}
 .training{
-    margin-bottom: 20px;
-    text-align: left;
+	background-color: #fafafa;	
 }
 .trainingimg{
     max-width:25%;
     height: 100%;
     overflow: hidden;
 }
-.traininginfo{
+.training.row{
     border:1px solid #333333;
     width:95%;
     display: inline-flex;
     margin: 10px 0;
 }
-.traininginfo .infotext{
+.training .infotext{
     width:75%;
     padding: 10px;
 }
-.start-btn{
-  padding-bottom: 10px;
+.start-btn .btn{
+	background-color: #96BF31;
+}
+.start-btn .btn:hover{
+	background-color: #203780;
 }
 p{
   margin-bottom: 2px;

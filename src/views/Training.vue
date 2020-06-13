@@ -2,56 +2,52 @@
     <div class="trainingen">
     <Header />
     <div class="container-fluid">
-        <h2 class="pagetitle">Trainingen</h2>
-        <div class="training-block" v-if="page=='tests'">
-            <div class="eindtoetsen">
-                <h3>Eindtoetsen</h3>
-                <p>Er zijn eindtoetsen beschikbaar</p>
-                <Eindtoetsitem :training="training1"/>
-            </div>
-        </div>
-        <div class="training-block" v-if="page=='followed'">
+		<div class="title">
+			<h2 class="pagetitle">Mijn trainingen</h2>
+			<hr>
+		</div>
+        <div class="training-block">
            <div class="training" v-for="(training, index) in filteredGevolgd" v-bind:key="training.training_id" @click="showSub(training)">
-                <font-awesome-icon icon="caret-right" /><b>{{index + 1}}. {{training.tName}}</b>
-                <div class="trainingSub onderdeel" v-for="(sub, index) in filterOnd(training.training_id)" 
-                @click="selectedOnderdeel = sub.onderdeel_id; active_onderdeel  = 'onderdeel'+sub.onderdeel_id"
-                v-bind:key="sub.oId">
-                    <div class="line"
-                     v-bind:class="{ 'active':  active_onderdeel  == 'onderdeel'+sub.onderdeel_id }">
-                        <div class="line-tekst">
-                            <font-awesome-icon icon="caret-right" /><b>{{index + 1}}. {{sub.oName}}</b>
-                        </div>
-                    </div>
-                    <div class="trainingSub subonderdeel" v-for="(sub, index) in filterSub(sub.onderdeel_id)"
-                        v-bind:key="sub.sId">
-                        <div class="line" v-if="selectedOnderdeel && selectedOnderdeel == sub.onderdeel_id">
-                            <div class="line-tekst" v-if="sub.isVisible == 1">
-                                <p>{{index + 1}}. {{sub.sName}}</p>
-                                <router-link :to="'/trainingpage/'+sub.subonderdeel_id"><b-button class="start-btn">Start</b-button></router-link>
-                            </div>
-                            <div class="line-tekst" v-if="sub.isVisible == null || sub.isVisible == 0">
-                                <p>{{index + 1}}. {{sub.sName}}</p>
-                                <router-link :to="''"><b-button class="stop-btn">Niet beschikbaar</b-button></router-link>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-           </div>
-           
-           <!-- <Trainingitem v-for="training in followed" v-bind:key="training.id" :training="training" :followed="true"/>
-      -->  </div>
-        <div class="training-block" v-if="page=='all'">
-           <Trainingitem v-for="training in filteredTraining" v-bind:key="training.id" :training="training"/>
-        </div>
-    </div>
-    </div>
+				<div class="trainingname">
+					<font-awesome-icon icon="caret-right" /><b>{{index + 1}}. {{training.tName}}</b>
+				</div>
+				<div class="trainingSub onderdeel" v-for="(sub, index) in filterOnd(training.training_id)" 
+					@click="selectedOnderdeel = sub.onderdeel_id; active_onderdeel  = 'onderdeel'+sub.onderdeel_id; closeActive('onderdeel'+sub.onderdeel_id)"
+					v-bind:key="sub.oId">
+					<div class="line"
+						v-bind:class="{ 'active':  active_onderdeel  == 'onderdeel'+sub.onderdeel_id }">
+						<div class="line-tekst">
+							<font-awesome-icon icon="caret-right" /><b>{{index + 1}}. {{sub.oName}}</b>
+						</div>
+					</div>
+					<div class="trainingSub subonderdeel" v-for="(sub, index) in filterSub(sub.onderdeel_id)"
+						v-bind:key="sub.sId">
+						<div class="line" v-if="selectedOnderdeel && selectedOnderdeel == sub.onderdeel_id">
+							<div class="line-tekst" v-if="sub.isVisible == 1">
+								<p>{{index + 1}}. {{sub.sName}}</p>
+								<router-link :to="'/trainingpage/'+sub.subonderdeel_id"><b-button class="start-btn">Start</b-button></router-link>
+							</div>
+						<!--<div class="line-tekst" v-if="sub.isVisible == null || sub.isVisible == 0">
+							<p>{{index + 1}}. {{sub.sName}}</p>
+							<router-link :to="''"><b-button class="stop-btn">Niet beschikbaar</b-button></router-link>
+						</div>-->
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="training-block" v-if="page=='all'">
+			<Trainingitem v-for="training in filteredTraining" v-bind:key="training.id" :training="training"/>
+		</div>
+	</div>
+</div>
 </template>
 
 <script>
 // @ is an alias to /src
 //import Trainingitem from '@/components/Trainingitem.vue'
 import Header from '@/components/general/Header.vue'
-import Eindtoetsitem from '@/components/Eindtoetsitem.vue'
+//import Eindtoetsitem from '@/components/Eindtoetsitem.vue'
 import {HTTP} from '@/assets/scripts/http-common.js'
 import Trainingitem from '@/components/Trainingitem.vue'
 
@@ -60,7 +56,7 @@ export default {
   components: {
     Trainingitem,
     Header,
-    Eindtoetsitem
+ //   Eindtoetsitem
   },
   props: [
       'page'
@@ -86,16 +82,17 @@ export default {
         HTTP.get('training/user/'+localStorage.id_token)
         .then(response =>{
         this.followed = response.data.training
+	console.log(this.followed)
         })
     },
-    filterSub: function(onderdeel){
+    filterSub: function(onderdeel){	
          //   var filteredTraining = []
         //    for(var item in this.trainingen){
         //        if(this.trainingen[item].onderdeel_id == onderdeel){
         //            filteredTraining.push(this.trainingen[item]);
         //        }
         //    }
-
+			
             var filtered = []
             var filteredIds = []
             for(var item in this.trainingen){
@@ -107,6 +104,7 @@ export default {
                 
                 }
             }
+			console.log(filtered)
             return filtered
         
 
@@ -117,7 +115,7 @@ export default {
 		var filteredTraining = []
 		var idArr = []
 		for(var item in this.trainingen){
-			if(this.trainingen[item].training_id == onderdeel && !idArr.includes(this.trainingen[item].onderdeel_id)){
+			if(this.trainingen[item].training_id == onderdeel && !idArr.includes(this.trainingen[item].onderdeel_id) && this.trainingen[item].isVisible == 1){
 				filteredTraining.push(this.trainingen[item]);
 				idArr.push(this.trainingen[item].onderdeel_id)
 			}
@@ -126,12 +124,21 @@ export default {
 		return filteredTraining;
 	},
 	showSub: function(training){
-		if(training.show == true){
+		if(training == true){
 			training.show = false
 		}
 		else{
 			training.show = true
 		}
+	},
+	closeActive(active){
+		console.log(active)
+		console.log(this.active_onderdeel)
+		if(this.active_onderdeel == active){
+			this.active_onderdeel = null
+			this.filterSub()
+		}
+		console.log(this.active_onderdeel)
 	}
 },
 created(){
@@ -156,11 +163,11 @@ computed: {
 		var filteredFollowed = []
 		var idArr = []
 		for(var item in this.trainingen){
-			if(filteredFollowed.length == 0){
+			if(filteredFollowed.length == 0 && this.trainingen[item].isVisible == 1){
 				filteredFollowed.push(this.trainingen[item])
 				idArr.push(this.trainingen[item].training_id)
 			}
-			else if(!idArr.includes(this.trainingen[item].training_id)){
+			else if(!idArr.includes(this.trainingen[item].training_id) && this.trainingen[item].isVisible == 1){
 				filteredFollowed.push(this.trainingen[item])
 				idArr.push(this.trainingen[item].training_id)
 			}
@@ -188,7 +195,8 @@ computed: {
 .trainingen .container-fluid{
     background-color: #ffffff;
     min-height: 100vh;
-    display: inline-flex;
+    display: block;
+	padding: 3%;
 }
 
 .trainingen .container-fluid>.row{
@@ -270,5 +278,18 @@ computed: {
     padding: 0;
     text-align: end;
     width: 25%;
+}
+hr{
+		
+}
+.title{
+	width: 100%;	
+}
+.trainingname{
+	padding: 5px;	
+}
+.trainingname svg{
+	font-size: 1.5em;
+	width: 1em;
 }
 </style>
