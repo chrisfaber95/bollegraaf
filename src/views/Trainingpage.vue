@@ -178,10 +178,20 @@ export default {
 	filteredQuestions: function(){
 		var filtered = []
 		var filteredIds = []
+		
+		let i = this.questions.length;
+		while (i--) {
+			const ri = Math.floor(Math.random() * (i + 1));
+			[this.questions[i], this.questions[ri]] = [this.questions[ri], this.questions[i]];
+		}
+		
 		for(var item in this.questions){
 			if(!filteredIds.includes(this.questions[item].question_id)){
 				filtered.push(this.questions[item])
 				filteredIds.push(this.questions[item].question_id)
+			}
+			if(filtered.length == 3){
+				break;	
 			}
 		}
        console.log(filtered)

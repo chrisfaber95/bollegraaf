@@ -9,39 +9,23 @@
 				</div>
 			</transition-group>
 		</draggable>-->
-	<div class="row">
-		<div class="col-md-3">
-			<draggable class="list-group" tag="ul" v-model="filteredAnswers" v-bind="dragOptions" :move="onMove" @start="isDragging=true" @end="isDragging=false">
-				<transition-group type="transition" :name="'flip-list'">
-					<li class="list-group-item" v-for="(element, index) in filteredAnswers" :key="index">
-						<i :class="element.fixed? 'fa fa-anchor' : 'glyphicon glyphicon-pushpin'" @click=" element.fixed=! element.fixed" aria-hidden="true"></i>
-							{{element.correct_answer}}
-						<span class="badge">{{element.answer_text}}</span>
-					</li>
-				</transition-group>
-			</draggable>
+	<div class="row answers">
+		<div class="col-md-1">
+			<div class="ans" v-for="(element, index) in filteredAnswers" :key="index">
+				<i :class="element.fixed? 'fa fa-anchor' : 'glyphicon glyphicon-pushpin'" @click=" element.fixed=! element.fixed" aria-hidden="true"></i>
+				{{element.answer_text}}
+			</div>
 		</div>
-
-		<div class="col-md-3">
-			<draggable element="span" v-model="given_answers" v-bind="dragOptions" :move="onMove">
-				<transition-group name="no" class="list-group" tag="ul">
-					<li class="list-group-item" v-for="(element, index) in given_answers" :key="'ans'+index">
-						<i :class="element.fixed? 'fa fa-anchor' : 'glyphicon glyphicon-pushpin'" @click=" element.fixed=! element.fixed" aria-hidden="true"></i>
-						{{element.name}}
-						<span class="badge">{{element.index}}</span>
-					</li>
+		<div class="col-md-9">
+			<draggable v-model="given_answers">
+				<transition-group>
+					<div class="ans" v-for="(element, index) in given_answers" :key="index">						
+						{{element.answer_text}}{{element.correct_answer}}
+					</div>
 				</transition-group>
 			</draggable>
 		</div>
 	</div>
-						<div class="row answer" v-for="(question, index) in filteredAnswers" v-bind:key="index">
-							<b-form-checkbox
-								v-model="given_answers[index]"
-								name="checkbox-1"
-								@change="answerChanged(index)"
-								class="answer_check"
-							></b-form-checkbox>{{question.answer_text}} - {{question.correct_answer}}
-						</div>
 		<b-button id="save-btn" @click="saveAnswers(questionId)">Opslaan</b-button>
 		{{correct_answer}}/{{filteredAnswers.length}}
 	</div>
@@ -78,19 +62,20 @@ export default {
         return one.order - two.order;
       });
     },
-    onMove: function({ relatedContext, draggedContext }) {
-      const relatedElement = relatedContext.element;
-      const draggedElement = draggedContext.element;
-      return (
-        (!relatedElement || !relatedElement.fixed) && !draggedElement.fixed
-      );
-    },
+ //   onMove: function({ relatedContext, draggedContext }) {
+   //   const relatedElement = relatedContext.element;
+   //   const draggedElement = draggedContext.element;
+   //   return (
+   //     (!relatedElement || !relatedElement.fixed) && !draggedElement.fixed
+   //   );
+  //  },
 	getQuestion: function(){
 		console.log(this.questionId)
 		HTTP.get('/questions/single/'+this.questionId)
 		.then(response => {
 			console.log(response.data)
-			this.questions = response.data.question
+			this.questions = response.data.question	
+			this.shuffleAnswers()
 			return this.questions
 		})
 	},
@@ -113,31 +98,41 @@ export default {
 		}
 		console.log(this.given_answers)
 	},
+	shuffleAnswers: function(){
+		this.given_answers = this.questions.map((x) => x)
+		let i = this.given_answers.length;		
+		console.log(this.given_answers)
+		while (i--) {
+			const ri = Math.floor(Math.random() * (i + 1));
+			[this.given_answers[i], this.given_answers[ri]] = [this.given_answers[ri], this.given_answers[i]];
+		}
+		console.log(this.given_answers)
+	},
 	saveAnswers: function(quest){
 		//var correct = 0
 		this.correct_answer = 0
-		var question = this.filteredQuestionAnswers(quest)
+		var question = this.given_answers
 		for(var item in question){
-			if(this.given_answers[item] == true){
-				this.given_answers[item] = "true"
-			}
-			else if(this.given_answers[item] == false || this.given_answers[item] == null){
-				this.given_answers[item] = "false"
-			}
-			console.log(this.given_answers)
-			if(question[item].correct_answer == this.given_answers[item]){
+			if(this.given_answers[item] == this.filteredAnswers[item]){
 				console.log("correct")
-				this.correct_answer += 1
+				console.log(this.given_answers[item])
+				console.log(this.filteredAnswers[item])
+				
+				this.correct_answer = this.correct_answer + 1
 			}
-			else{
+			else if(this.given_answers[item] != this.filteredAnswers[item]){
 				console.log("niet correct")
+				console.log(this.given_answers[item])
+				console.log(this.filteredAnswers[item])
 			}
 		}
 		var data= {
 			question_id: quest,
 			correct_answers: this.correct_answer,
-			date: new Date()
+			date: new Date(),
+			possible_answers: this.given_answers.length
 		}
+		console.log(data)
 		HTTP.post('/progress/'+localStorage.id_token, data)
 		.then(response => {
 			console.log(response.data)
@@ -167,7 +162,19 @@ export default {
 		}
        console.log(filtered)
          return filtered
-     }
+     },
+	filteredGiven_answers: function(){
+		var filtered = []
+			var filteredIds = []
+			for(var item in this.given_answers){
+				if(!filteredIds.includes(this.given_answers[item].multiAnswer_id) && this.given_answers[item].multiAnswer_id != null){
+					filtered.push(this.given_answers[item])
+					filteredIds.push(this.given_answers[item].multiAnswer_id)
+				}
+			}
+		console.log(filtered)
+		return filtered
+	}
   },
   watch: {
     isDragging(newValue) {
@@ -244,5 +251,16 @@ p{
 }
 .list-group-item i {
   cursor: pointer;
+}
+.ans{
+	border: 1px solid #ececec;	
+}
+.answers .col-md-1{
+	margin: 0;
+	padding: 5px;
+}
+.answers .col-md-9{
+	margin: 0;
+	padding: 5px;
 }
 </style>

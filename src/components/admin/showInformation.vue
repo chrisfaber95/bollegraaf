@@ -161,9 +161,16 @@ methods:{
 		console.log(evt)
 		console.log(this.info)
 		for(var item in this.info){
-			this.info[item].iPage = item
-			this.saveInformation(this.info[item])
-		}		
+			if(this.info[item].iPage != 0){
+				this.info[item].iPage = item
+				HTTP.put('information/update/'+this.info[item].iId, this.info[item])
+					.then(response => {
+					console.log(response.data)
+					alert(response.data.message)
+				})
+			}
+		}	
+		this.getInformation()	
 		return true;
 	},
 	addTrainingRef: function(info){

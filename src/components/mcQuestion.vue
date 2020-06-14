@@ -8,7 +8,7 @@
 				class="answer_check"
 			></b-form-checkbox>{{question.answer_text}} - {{question.correct_answer}}
 		</div>		
-		<b-button id="save-btn" @click="saveAnswers(item.question_id)">Opslaan</b-button>
+		<b-button id="save-btn" @click="saveAnswers(questionId)">Opslaan</b-button>
 		{{correct_answer}}/{{filteredAnswers.length}}
 	</div>
 </template>
@@ -54,7 +54,7 @@ export default {
 	saveAnswers: function(quest){
 		//var correct = 0
 		this.correct_answer = 0
-		var question = this.filteredQuestionAnswers(quest)
+		var question = this.filteredAnswers
 		for(var item in question){
 			if(this.given_answers[item] == true){
 				this.given_answers[item] = "true"
@@ -74,7 +74,8 @@ export default {
 		var data= {
 			question_id: quest,
 			correct_answers: this.correct_answer,
-			date: new Date()
+			date: new Date(),
+			possible_answers: question.length
 		}
 		HTTP.post('/progress/'+localStorage.id_token, data)
 		.then(response => {
