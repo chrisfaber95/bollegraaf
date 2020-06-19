@@ -39,7 +39,10 @@
                     </b-navbar-nav>
 
                     <!-- Right aligned nav items -->
-                    <b-navbar-nav class="ml-auto">
+                    <b-navbar-nav class="ml-auto">						
+						<select v-model="language_code">
+							<option v-for="item in filteredLanguage" v-bind:key="item.language_id" v-bind:value="item.code">{{item.name}}</option>
+						</select>
                         <router-link to="/help" tag="b-nav-item">Help</router-link>
                         <b-button  v-b-modal.modal-1 tag="b-nav-item">Afsluiten</b-button>
                     </b-navbar-nav>
@@ -79,7 +82,9 @@ export default {
         permissions: 1,
         breadcrumbList: null,
         notOpenedMail: null,
-        notReaded: 0
+        notReaded: 0,
+        language: null,
+		language_code: null
     }
   },
   methods:{
@@ -117,6 +122,14 @@ export default {
       },
       searchLatestNotOpened(mail){
           return mail.isOpened == 0;
+      },
+      getLanguage: function(){
+          HTTP.get('settings/language/')
+          .then(response => {
+            this.language = response.data.language
+            console.log(this.language)
+            return this.language
+          })
       }
   },
   mounted(){
@@ -125,11 +138,18 @@ export default {
       this.updateList();
       console.log(this.breadcrumbList);
       this.getLatestMail();
+      this.getLanguage();
  },
  watch: {
      '$route' (){
          this.updateList()
-     }
+     },
+	language_code: function(){
+		console.log(this.language)
+		localStorage.setItem('language_code', this.language_code)
+		console.log(localStorage.language_code)
+		this.$i18n.locale = localStorage.language_code
+	}
  },
  computed: {
      getHeader: function(){
@@ -138,6 +158,9 @@ export default {
             head = "Welkom, " + JSON.parse(localStorage.getItem('userinfo'))[0].name + " " + JSON.parse(localStorage.getItem('userinfo'))[0].surname
          }
          return head;
+     },
+     filteredLanguage: function(){
+         return this.language
      }
  },
 }

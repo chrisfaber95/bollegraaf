@@ -11,7 +11,7 @@
 			<div v-html="question.question_text"></div>
 		</div>
 		<div class="col-2">
-			<b-button  v-b-modal.modal-question class="bewerk-btn" @click="changeQuestion(question.question_id)">Bewerk vraag</b-button>
+			<b-button  v-b-modal.modal-question class="bewerk-btn" @click="changeQuestion(question.question_id)">Open vraag</b-button>
 		</div>
 		<div class="col-2">		
 			<b-button @click="deleteQuestion(question.question_id)">Verwijder vraag</b-button>
@@ -27,16 +27,17 @@
 			</div>
 		</div>
 		<div class="buttons">
-			<b-button class="mt-3" block @click="closeModal()">Wijzigingen opslaan</b-button>
 			<b-button class="mt-3" block @click="closeModal()">Sluiten</b-button>
 		</div>
 	</b-modal>
 	<b-modal id="modal-newquestion" size="xl" hide-footer hide-header>
 		<div class="d-block">
 			<div class="row">
-				<select v-model="newQuestion.language_id">
-					<option v-for="item in filteredLanguage" v-bind:key="item.language_id" v-bind:value="item.language_id">{{item.name}}</option>
-				</select>
+				<div class="col-6">
+					<select v-model="newQuestion.language_id">
+						<option v-for="item in filteredLanguage" v-bind:key="item.language_id" v-bind:value="item.language_id">{{item.name}}</option>
+					</select>
+				</div>
 				<b-form-group id="input-group-2" label="Quetiontype:" label-for="input-1">
 					<b-form-select
 						type="text" 
@@ -88,14 +89,7 @@
 				
 				<div v-if="newQuestion.type == 'm'">
 					<b-form-group id="input-group-2" label="Question:" label-for="input-1">
-						<b-form-input
-							type="text" 
-							name="questiontext"
-							v-model="newQuestion.questionText"
-							id= "input-3"
-							value=""
-						>
-						</b-form-input>				
+						<ckeditor :editor="editor" v-model="newQuestion.questionText" :config="editorConfig"></ckeditor>			
 					</b-form-group>
 					<b-form-group id="input-group-2" label="Antwoorden:" label-for="input-2">
 						<div class="row answers" v-for="(item, index) in newQuestion.answers" v-bind:key="index">
@@ -126,7 +120,7 @@
 		</div>
 		<div class="buttons">
 			<b-button class="mt-3" block @click="addQuestion()">Vraag opslaan</b-button>
-			<b-button class="mt-3" block @click="closeModal()">Sluiten</b-button>
+			<b-button class="mt-3" block @click="closenewModal()">Sluiten</b-button>
 		</div>
 	</b-modal>
 </div>
@@ -181,7 +175,10 @@ data: function(){
 },
 methods:{
       closeModal: function(){
-        this.$bvModal.hide('modal-3')
+        this.$bvModal.hide('modal-question')
+      },
+      closenewModal: function(){
+        this.$bvModal.hide('modal-newquestion')
       },
 	getQuestions: function(){
 		HTTP.get('/questions/' + this.selectedSub)
@@ -205,6 +202,7 @@ methods:{
 			return this.questions
 		})
 		this.getQuestions()
+		this.closenewModal()
 	},
 	deleteQuestion:function(qId){
 		alert(qId)

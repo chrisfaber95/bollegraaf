@@ -22,8 +22,8 @@
 					</div>
 					<div class="trainingSub subonderdeel" v-for="(sub, index) in filterSub(sub.onderdeel_id)"
 						v-bind:key="sub.sId">
-						<div class="line" v-if="selectedOnderdeel && selectedOnderdeel == sub.onderdeel_id">
-							<div class="line-tekst" v-if="sub.isVisible == 1">
+						<div class="line" v-if="selectedOnderdeel && selectedOnderdeel == sub.onderdeel_id && sub.isVisible == 1">
+							<div class="line-tekst">
 								<p>{{index + 1}}. {{sub.sName}}</p>
 								<router-link :to="'/trainingpage/'+sub.subonderdeel_id"><b-button class="start-btn">Start</b-button></router-link>
 							</div>
@@ -36,9 +36,6 @@
 				</div>
 			</div>
 		</div>
-		<div class="training-block" v-if="page=='all'">
-			<Trainingitem v-for="training in filteredTraining" v-bind:key="training.id" :training="training"/>
-		</div>
 	</div>
 </div>
 </template>
@@ -49,17 +46,13 @@
 import Header from '@/components/general/Header.vue'
 //import Eindtoetsitem from '@/components/Eindtoetsitem.vue'
 import {HTTP} from '@/assets/scripts/http-common.js'
-import Trainingitem from '@/components/Trainingitem.vue'
 
 export default {
   name: 'Home',
   components: {
-    Trainingitem,
-    Header,
- //   Eindtoetsitem
+    Header
   },
   props: [
-      'page'
   ],
   data: function(){
     return{

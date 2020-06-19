@@ -8,7 +8,8 @@ export default{
             email: '',
             userinfo:[]
         },
-        permissions: 1
+        permissions: 1,
+		language_code: 'en'
 
     },
     login(email, pass){
@@ -27,7 +28,10 @@ export default{
                 localStorage.setItem('expires', Date.now() + response.data.user.expires_in)
                 localStorage.setItem('info', response.data.user.email)
                 localStorage.setItem('permissions', response.data.user.permissions)
-                this.user.permissions = response.data.user.permissions;
+                localStorage.setItem('language_code', response.data.user.language_code)
+                this.user.permissions = response.data.user.language_code;
+				console.log(response.data.user)
+                this.user.language_code = response.data.user.language_code;
                 this.user.authenticated = true;
 
                 this.getInfo()

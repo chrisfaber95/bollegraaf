@@ -2,10 +2,10 @@
   <div class="login">
     <div class="loginform">
         <img class="img-fluid" src= "../assets/Bollegraaf_logo_wit.png" height="40" width="200">
-        <p><b>Welkom,</b>Log in astublieft</p>
-        <b-input type="text" placeholder="Gebruikersnaam" v-model="userLogin.email"/>
-        <b-input type="password" placeholder="Wachtwoord" v-model="userLogin.pass"/>
-        <b-button @click="login()">Inloggen</b-button>
+        <p><b>{{ $t("message.hello") }},</b>{{ $t("message.login") }}</p>
+        <b-input type="text" :placeholder="$t('words.username')" v-model="userLogin.email"/>
+        <b-input type="password" :placeholder="$t('words.password')" v-model="userLogin.pass"/>
+        <b-button @click="login()">{{ $t("words.login") }}</b-button>
        <!-- <b-button @click="register()">register</b-button> -->
     </div>
   </div>
@@ -29,7 +29,8 @@ export default {
   },
   methods:{
     login: function (){
-      auth.login(this.userLogin.email, this.userLogin.pass);
+		auth.login(this.userLogin.email, this.userLogin.pass);
+		this.$i18n.locale = auth.user.language_code
     },
     register: function (){
       auth.register(this.userLogin.email, this.userLogin.pass);

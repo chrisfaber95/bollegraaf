@@ -1,21 +1,22 @@
 <template>
-	<div class="training row">
+	<div class="training row" ref="block">
 		<div class="trainingimg">
-			<img class="img-fluid" :src="imageUrl(training.tImage)"/>
+			<img class="img-fluid" v-if="first_sub.tImage" :src="imageUrl(first_sub.tImage)"/>
+			<img class="img-fluid" v-if="!first_sub.tImage" :src="imageUrl('')"/>
 		</div>
 		<div class="infotext">			
 			<div class="row">
 				<div class="col-lg-6">
-					<span><b>Training:</b> {{training.tName}}</span>
+					<span><b>Training:</b> {{first_sub.tName}}</span>
 					<hr>
 				</div>
 			</div>
 			<div class="row">
 				<div class="col-lg-6">
-					<p><b>Trainingsprogramma:</b> {{training.tName}}</p>
-					<p><b>Onderdeel:</b> {{training.oName}}</p>
-					<p><b>Training:</b> {{training.sName}}</p>
-					<p><b>Tijdsduur:</b> {{training.time}}</p>
+					<p><b>Trainingsprogramma:</b> {{first_sub.tName}}</p>
+					<p><b>Onderdeel:</b> {{first_sub.oName}}</p>
+					<p><b>Training:</b> {{first_sub.sName}}</p>
+					<p><b>Tijdsduur:</b> {{first_sub.time}}</p>
 				</div>
 				<div class="col-lg-6">
 					<span>Inhoud van deze training</span>
@@ -24,10 +25,10 @@
 			</div>
 			<div class="row">
 				<div class="col-lg-8">
-					<b-progress :value="training.percentage_finished" :max="100" show-progress animated></b-progress>
+					<b-progress :value="finished" :max="followed_trainingen.length" show-progress animated></b-progress>
 				</div>
 				<div class="col-lg-4 start-btn">
-					<b-button class="">Hervat training</b-button> 
+					<router-link :to="'/trainingpage/'+first_sub.subonderdeel_id"><b-button class="start-btn">Hervat training</b-button></router-link>
 				</div>
 			</div>
 		</div>
@@ -43,44 +44,52 @@ export default {
     'training'
   ],
   mounted(){
-    if(this.followed == "true"){
      this.getTraining();
-    }
-    else{
-      this.getAllTraining();
-    }
-    console.log(this);
- //   this.countSubs();
  },
   data: function(){
     return{
-      followed_trainingen: [],
-      trainingen: []
+		followed_trainingen: [],
+		trainingen: [],
+		finished: 0,
+		first_sub: null
     }
   },
 methods:{
 	imageUrl: function(pet){
-		console.log
-		if(pet != '' || pet != ' ' || pet != null){
+		console.log(pet)
+		if(pet == '' || pet == ' ' || pet == null){
 			return require('@/assets/Afbeeldingen_vierkant/afbeelding_pers.jpg')
 		}
 		else{
 			return require('@/assets/Afbeeldingen_vierkant/' + pet)			
 		}
    },
-   countSubs: function(){
-   //  if(this.$props.training.lastSubonderdeel){
-     // HTTP.get('training/onderdeel/'+this.$props.training.oId)
-     // .then(response =>{
-    //    console.log(response)
-    //  })
-    // }
-   },
    getTraining: function(){
-     HTTP.get('training/user/'+localStorage.id_token)
+	console.log(this.training)
+     HTTP.get('training/single/'+this.training.training_id+'/user/'+localStorage.id_token)
      .then(response =>{
        console.log(response)
-       this.followed_trainingen = response.data.training
+		var filtered = []
+		var filteredIds = []
+		this.finished = 0
+		for(var item in response.data.training){
+			if(response.data.training[item].isVisible){
+				filtered.push(response.data.training[item])
+				filteredIds.push(response.data.training[item].subonderdeel_id)
+				if(this.first_sub == null && response.data.training[item].isFinished == 0){
+					this.first_sub  = response.data.training[item]	
+				}
+				if(response.data.training[item].isFinished == 1){
+					++this.finished
+				}
+				console.log(this.first_sub, this.finished)
+			}
+		}
+		console.log(filtered)
+       this.followed_trainingen = filtered
+		if(this.followed_trainingen.length == this.finished){
+			this.$refs.block.classList.add('finished')
+		}
      })
    },
    getAllTraining: function(){
@@ -96,7 +105,7 @@ methods:{
 
       var lockedNumber =[];
       for(var item in this.followed_trainingen){
-        if(this.followed_trainingen[item].percentage_finished != 100){
+        if(this.followed_trainingen[item].isFinished != 100){
           lockedNumber.push(this.followed_trainingen[item])
         }
         if(lockedNumber.length == 2){
@@ -105,6 +114,19 @@ methods:{
       }
       return lockedNumber;
     },
+	subCount: function(){
+		console.log(this.followed_trainingen.length)
+		return this.followed_trainingen.length + 1
+	},
+	finishedCount:function(){
+		var finished = []
+		for(var item in this.followed_trainingen){
+			if(this.followed_trainingen[item].isFinished){
+				finished.push(this.followed_trainingen[item])
+			}
+		}
+		return finished.length
+	},
     filteredNotSubbedTraining: function(){
 		var filtered = []
 		var filteredIds = []
@@ -172,5 +194,8 @@ p{
       overflow: hidden;
       text-align: right;
   }
+}
+.finished{
+	display: none;	
 }
 </style>

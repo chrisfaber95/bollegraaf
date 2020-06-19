@@ -30,7 +30,7 @@
 					<hr/>
 					<div class="lastinfo" v-html="lastInfopage"></div>
               </slide>
-              <slide class="editors" v-for="item in filteredQuestions" v-bind:key="'questions'+item.question_id">
+              <slide class="editors" :ref="questionslides" v-for="item in filteredQuestions" v-bind:key="'questions'+item.question_id">
 				<p>Vraag:</p><div v-html="item.question_text"> </div>
 					<br/>
 					<div class="mc" v-if="item.questiontype == 'mc'">
@@ -38,6 +38,26 @@
 					</div>
 					<div class="m" v-if="item.questiontype == 'm'">
 						<mquestion v-bind:questionId="item.question_id"></mquestion>
+					</div>
+              </slide>	
+              <slide class="editors">
+					<div class="row">
+						<h4>Overzicht:</h4>
+						<div class="col-3">
+							<b>Score:</b>
+							<b>Cijfer:</b>
+							<b>Resultaat:</b>
+						</div>
+						<div class="col-3">
+							<b>Aantal vragen:</b>3
+							<b>Aantal goed:</b>
+							<b>Aantal gedeeltelijk goed:</b>
+							<b>Aantal fout:</b>
+							<b>Aantal niet beantwoord:</b>
+						</div>
+						<div class="col-3">
+							<b>Score:</b>
+						</div>
 					</div>
               </slide>	
               </carousel>
@@ -66,7 +86,8 @@
 				</div>
 				<div class="col-2">
 					<b-button id="vorige-btn" @click="prevSlide()">Vorige</b-button>
-					<b-button id="volgende-btn" @click="nextSlide()">Volgende</b-button>
+					<b-button id="volgende-btn" @click="nextSlide()" v-if="!finished">Volgende</b-button>
+					<b-button id="afrond-btn" @click="afronden()" v-if="finished">Afronden</b-button>
 				</div>
 			</div>
         </div>
@@ -101,11 +122,13 @@ export default {
 		lastInfopage:"Je hebt net alle informatie bekeken over de werking van de machine.<br/><br/>Nu komen er een aantal vragen over de informatie die je net hebt bekeken. Aan het einde van de toets krijg je direct de uitslag. Met de uitslag kun je zien welke vragen je goed, gedeeltelijk goed of fout hebt beantwoord.",
 		lastInfoTitle:"Instructie toets",
 		questions: [],
+		questionResults:{
+			correct: 0,
+			partcorrect: 0,
+			wrong: 0			
+		},
 		starting_answer: [],
-		answers: [],
-		given_answers: [],
-		correct_answer: 0,
-		current_question: null,
+		finished: false
     }
   },
   methods:{
@@ -124,6 +147,16 @@ export default {
 			return this.questions
 		})
 	},
+	afronden: function(){
+		var data = {
+			subId: this.$route.params.training
+		}
+		console.log(data)
+		HTTP.put('/progress/'+localStorage.id_token, data)
+		.then(response => {
+			console.log(response.data)
+		})
+	},
 	nextSlide() {
 		console.log(this.$refs.indicators.length)
 		console.log(this.$refs.carousel.currentPage)
@@ -131,6 +164,10 @@ export default {
 			this.$refs.indicators[this.$refs.carousel.currentPage].firstChild.classList.add('pageDone')
 		}
 		this.$refs.carousel.goToPage(this.$refs.carousel.getNextPage());
+		
+		if(this.$refs.carousel.currentPage == this.$refs.carousel.getNextPage()){
+			this.finished = true	
+		}
 		console.log(this.$refs.carousel.getNextPage())
     },
     prevSlide() {

@@ -17,19 +17,34 @@
 		paginationPosition= "top"
 	>
 		<slide class="editors" v-for="edit in info" v-bind:key="'info'+edit.iId">
-			<label>Pagina: </label><input v-model="edit.iPage" :type="'number'" />
-			<label>Titel: </label><input v-model="edit.iTitle" :type="'text'" />	<br/>
-			<label>Referentietekst: </label><input v-model="newRef.refText" :type="'text'" />
-			<b-form-group id="input-group-3" label="Referentie:" label-for="input-5">
-				<b-form-select
-					type="text" 
-					name="subonderdeel"
-					:options="filteredAllSub"
-					v-model="newRef.subId"
-					id= "input-5"
-				></b-form-select>
-			<b-button @click="addTrainingRef(edit.iId)">Referentie opslaan</b-button>
-			</b-form-group>
+			<div class="">
+				<label>Paginanummer: </label><input v-model="edit.iPage" :type="'number'" />
+			</div>
+			<div class="">
+				<label>Titel: </label><input v-model="edit.iTitle" :type="'text'" />
+			</div>
+			<div class="">
+				<b-button @click="deleteInformation(edit.iId)">Delete pagina</b-button>
+				<b-button @click="saveInformation(edit)">Pagina opslaan</b-button>
+					<select v-model="edit.language_id">
+						<option v-for="item in filteredLanguage" v-bind:key="item.language_id" v-bind:value="item.language_id">{{item.name}}</option>
+					</select>
+			</div>			
+			<div class="">
+				<ckeditor :editor="editor" v-model="edit.iText" :config="editorConfig"></ckeditor>
+			</div>			
+			<div class="">
+				<label>Referentietekst: </label><input v-model="newRef.refText" :type="'text'" />
+				<b-form-group id="input-group-3" label="Referentie:" label-for="input-5">
+					<b-form-select
+						type="text" 
+						name="subonderdeel"
+						:options="filteredAllSub"
+						v-model="newRef.subId"
+						id= "input-5"
+					></b-form-select>
+				<b-button @click="addTrainingRef(edit.iId)">Referentie opslaan</b-button>
+				</b-form-group>
 			<b-form-group id="input-group-3" label="Referentie:" label-for="input-6">
 				<b-form-select
 						type="text" 
@@ -40,14 +55,8 @@
 						v-if="referentions != null"
 				></b-form-select>
 			</b-form-group>
-			<b-button @click="deleteInformation(edit.iId)">Delete pagina</b-button>
-			<div>
-			<ckeditor :editor="editor" v-model="edit.iText" :config="editorConfig"></ckeditor>
-				<select v-model="edit.language_id">
-					<option v-for="item in filteredLanguage" v-bind:key="item.language_id" v-bind:value="item.language_id">{{item.name}}</option>
-				</select>
-			<b-button @click="saveInformation(edit)">Opslaan</b-button>
-			</div>
+			</div>			
+			
 		</slide>
 	</carousel>
 </div>
