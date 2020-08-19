@@ -17,8 +17,9 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { faCaretRight, faUsers, faBookOpen, faFile } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
-import translationFile from './assets/translate.js';
-const translations = translationFile
+import {translate, openTranslate} from './assets/translate1.js';
+const translations = translate
+openTranslate()
 console.log(translations)
 library.add(faCaretRight, faUsers, faBookOpen, faFile)
  

@@ -1,46 +1,16 @@
 <template>
   <div class="training">
-        <h2>Quiz questions</h2>
-         <div v-if="setting=='list'">
-            <div class="row" v-for="question in filteredQuestions" v-bind:key="question.id">
-                <div class="col-1">
-                    {{question.question_id}}
-                </div>
-                <div class="col-2">
-                    {{question.question_text}}
-                </div>
-                <div class="col-2">
-                    {{question.tName}}
-                </div>
-                <div class="col-2">
-                    {{question.sName}}
-                </div>
-                <div class="col-1">
-                    <b-button  v-b-modal.modal-question class="bewerk-btn" @click="changeQuestion(question)">Bewerk</b-button>
-                </div>
-            </div>
-
-             <b-modal id="modal-question" size="xl" hide-footer hide-header v-if="selectedQuestion">
-                <div class="d-block">
-                    <div class="row">
-                        <div class="profile-block col-6" id="algemeen" v-if="selectedQuestion">
-                            {{selectedQuestion}}
-                                <b-form-checkbox v-model="selectedQuestion.isVisible" value="1" unchecked-value="0" @change="updateTraining(training, selectedQuestion)">
-                                </b-form-checkbox>
-                        </div>
-                    </div>
-                </div>
-                <div class="buttons">
-                    <b-button class="mt-3" block @click="closeModal()">Wijzigingen opslaan</b-button>
-                    <b-button class="mt-3" block @click="closeModal()">Sluiten</b-button>
-                </div>
-            </b-modal>
-        </div>
+        <h2>Instellingen</h2>
+        <hr>
+		<h3>Vertalingen</h3>
+		<input ref="file" id="file" type="file" @change="handleFileUpload()" accept=".csv">
+		<b-button @click="sendFile()">Toevoegen</b-button>
+		<b-button @click="retrieveFile()">Download translation csv</b-button>
   </div>
 </template>
 
 <script>
-import {HTTP} from '@/assets/scripts/http-common.js';
+import {HTTP, Files} from '@/assets/scripts/http-common.js';
 export default {
   name: 'HelloWorld',
   props: [
@@ -48,47 +18,41 @@ export default {
   ],
   data: function(){
     return{
-        questions: [],
-        selectedQuestion: null
+		file: ''
     }
   },
   methods:{
-      getTests: function(){
-          HTTP.get('/questions')
-          .then(response => {
-            console.log(response.data)
-            this.questions = response.data.question
-            return this.questions
-          })
-      },
-      closeModal: function(){
-        this.$bvModal.hide('modal-question')
-      },
-      changeQuestion: function(sub){
-          this.selectedQuestion = sub
-      }
-
+		handleFileUpload(){
+			this.file = this.$refs.file.files[0];
+		},
+		sendFile() {
+			let formData = new FormData()
+			console.log(this.file.type)
+			if(this.file.type == 'application/vnd.ms-excel'){
+				formData.append('file', this.file)
+				HTTP.put('translation/', formData,
+				{
+				headers: {
+					'Content-Type': 'multipart/form-data'
+					}
+				})
+				.then(response => {
+					console.log(response)
+				}, error => {
+					console.log(error)
+				});
+			}
+			else{
+				alert("This type of file can not be uploaded, please only use CSV")
+			}
+		},
+		retrieveFile: function(){
+			window.open(Files + 'translate/vertalingbollegraaf.csv', "_blank")
+		}
   },
   mounted(){
-      this.getTests();
  },
  computed:{
-     filteredQuestions: function(){
-         var filtered = []
-       var filteredIds = []
-       for(var item in this.questions){
-         if(!filteredIds.includes(this.questions[item].question_id)){
-           filtered.push(this.questions[item])
-           filteredIds.push(this.questions[item].question_id)
-         }
-       }
-       console.log(filtered)
-         return filtered
-        
-       //  return this.questions
-
-
-     }
  },
  watch:{
      tests: function(){

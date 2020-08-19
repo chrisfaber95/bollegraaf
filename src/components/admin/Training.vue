@@ -3,7 +3,7 @@
         <h2>Training</h2>
          <div v-if="setting=='list'">
             <div class="row" id="selection">
-                <div class="col-3">
+                <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12">
 					<b-form-group id="input-group-1" label="Training:" label-for="input-1">
 						<b-form-select
 							type="text" 
@@ -15,20 +15,15 @@
 						></b-form-select>
 					</b-form-group>
 					<div class="row">
-						<div class="col-6">
+						<div class="col-8">
 							<b-input type="text" value="" v-model="newTraining" placeholder="Nieuwe Training"/>
 						</div>
-						<div class="col-6">							
-							<b-button @click="addTraining(newTraining)">Voeg toe</b-button>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-12">							
-							<b-button @click="removeTraining()">Verwijder geselecteerde training</b-button>
+						<div class="col-4">							
+							<b-button class="add-btn" @click="addTraining(newTraining)">Voeg toe</b-button>
 						</div>
 					</div>
                 </div>
-                <div class="col-3" v-if="selectedTraining">
+                <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12">
 					<b-form-group id="input-group-2" label="Onderdeel:" label-for="input-2">
 						<b-form-select
 							type="text" 
@@ -40,46 +35,40 @@
 						></b-form-select>
 					</b-form-group>
 					<div class="row">
-						<div class="col-6">
+						<div class="col-8">
 							<b-input type="text" v-model="newOnderdeel" placeholder="Nieuwe Onderdeel"/>
 						</div>
-						<div class="col-6">							
-							<b-button @click="addOnderdeel(newOnderdeel, selectedTraining)">Voeg toe</b-button>
+						<div class="col-4">							
+							<b-button class="add-btn" @click="addOnderdeel(newOnderdeel, selectedTraining)">Voeg toe</b-button>
 						</div>
-					<div class="row">
-						<div class="col-12">							
-							<b-button @click="removeOnderdeel()">Verwijder geselecteerde onderdeel</b-button>
-						</div>
-					</div>
 					</div>
 					
                 </div>
-                <div class="col-3" v-if="selectedOnderdeel">
+                <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12">
 					<b-form-group id="input-group-3" label="Subonderdeel:" label-for="input-3">
 						<b-form-select
 							type="text" 
 							name="subonderdeel"
 							:options="filteredSub"
 							v-model="selectedSub" 
-							@change="getInformation(); getQuestions(); active_sub = 'subonderdeel'+selectedSub.value"
+							@change="getInformation(selectedSub); getQuestions(selectedSub); active_sub = 'subonderdeel'+selectedSub.value"
 							id= "input-3"
 						></b-form-select>
 					</b-form-group>
 					<div class="row">
-						<div class="col-6">
+						<div class="col-8">
 							<b-input type="text" v-model="newSubonderdeel" placeholder="Nieuwe Subonderdeel"/>
 						</div>
-						<div class="col-6">							
-							<b-button @click="addSubonderdeel(newSubonderdeel, selectedOnderdeel)">Voeg toe</b-button>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-12">							
-							<b-button @click="removeSubonderdeel()">Verwijder geselecteerde subonderdeel</b-button>
+						<div class="col-4">							
+							<b-button class="add-btn" @click="addSubonderdeel(newSubonderdeel, selectedOnderdeel)">Voeg toe</b-button>
 						</div>
 					</div>
                 </div>
-
+				<div class="col-2" v-if="getPermission() == 2">						
+							<b-button class="add-btn" @click="removeTraining()" v-if="selectedTraining">Verwijder training</b-button>
+							<b-button class="add-btn" @click="removeOnderdeel()" v-if="selectedOnderdeel">Verwijder onderdeel</b-button>
+							<b-button class="add-btn" @click="removeSubonderdeel()" v-if="selectedSub">Verwijder subonderdeel</b-button>
+				</div>
             </div>
 			<div class="col-12" v-if="selectedSub">
 				<toggle-switch
@@ -88,8 +77,8 @@
 				v-on:click="getQuestions(selectedSub.value)"
 				/>
                  <!--   <Texteditor ref="editor" :text="selectedInformation[0].iText"/> -->
-				<ShowInfo class="info" v-bind:selectedSub="selectedSub" v-if="infoSwitch == 'Info'"></ShowInfo>
-				<ShowQuestion class="info" v-bind:selectedSub="selectedSub" v-if="infoSwitch == 'Vragen'"></ShowQuestion>
+				<ShowInfo class="info" v-bind:selectedSub="selectedSub" v-if="infoSwitch == 'Info'" :key="'info'+selectedSub"></ShowInfo>
+				<ShowQuestion class="info" v-bind:selectedSub="selectedSub" v-if="infoSwitch == 'Vragen'" :key="'quest'+selectedSub"></ShowQuestion>
 			</div>
 		</div>
 	</div>
@@ -101,6 +90,7 @@ import {HTTP} from '@/assets/scripts/http-common.js'
 //import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import ShowInfo from '@/components/admin/showInformation.vue';
 import ShowQuestion from '@/components/admin/showQuestion.vue';
+import auth from '@/assets/scripts/auth';
 //import ClassicEditor from '@/assets/ckeditor-own/src/ckeditor.js';
 //import ClassicEditor from '@ckeditor/ckeditor5-editor-classic/src/classiceditor';
 //import ClassicEditor from '@ckeditor/ckeditor5-own';
@@ -210,16 +200,16 @@ methods:{
             return response.data.onderdeel
           })
       },
-      getInformation: function(){
-		console.log(this.selectedSub)
+      getInformation: function(sub){
+		console.log(sub)
 		this.info=[{
-			sId: this.selectedSub,
+			sId: sub,
 			iPage: 0,
 			iId: 0,
 			iText: '',
 			language_id: 1
 		}]
-		HTTP.get('information/'+this.selectedSub)
+		HTTP.get('information/'+sub)
 		.then(response => {
 			console.log(response.data.info)
 			for(var item in response.data.info){
@@ -241,13 +231,15 @@ methods:{
         console.log(edit)
         this.info[edit].iPage = this.pageEdit;
       },
-      deleteInformation: function(iId){
+      deleteInformation: function(iId){	  
+		if(confirm("Do you really want to delete?")){
         HTTP.delete('information/'+iId)
           .then(response => {
             console.log(response.data)
 			alert(response.data.message)
 			this.getInformation()
           })
+		}
       },
 	getReferentions: function(){
 		HTTP.get('referentions')
@@ -276,7 +268,8 @@ methods:{
 			alert("Geen trainingnaam ingevuld")  
 		}
       },
-	removeTraining: function(){
+	removeTraining: function(){	
+		if(confirm("Do you really want to delete?")){
 		if(this.selectedTraining != null){
 			HTTP.delete('training/' + this.selectedTraining)
 			.then(response => {
@@ -286,6 +279,7 @@ methods:{
 		}
 		else{
 			alert("Geen training geselecteerd")  
+		}
 		}
 	},
 	addOnderdeel: function(onderdeel, selected){
@@ -303,7 +297,8 @@ methods:{
 			alert("Geen onderdeelnaam ingevuld")  
 		}
 	},
-	removeOnderdeel: function(){
+	removeOnderdeel: function(){		
+		if(confirm("Do you really want to delete?")){
 		if(this.selectedOnderdeel != null){
 			HTTP.delete('training/onderdeel/' + this.selectedOnderdeel)
 			.then(response => {
@@ -313,6 +308,7 @@ methods:{
 		}
 		else{
 			alert("Geen onderdeel geselecteerd")  
+		}
 		}
 	},
 	addSubonderdeel: function(sub, selected){
@@ -331,6 +327,8 @@ methods:{
 		}
 	},
 	removeSubonderdeel: function(){
+		
+		if(confirm("Do you really want to delete?")){
 		if(this.selectedSub != null){
 			HTTP.delete('training/subonderdeel/' + this.selectedSub)
 			.then(response => {
@@ -341,9 +339,10 @@ methods:{
 		else{
 			alert("Geen onderdeel geselecteerd")  
 		}
+		}
 	},
-	getQuestions: function(){
-		HTTP.get('/questions/' + this.selectedSub)
+	getQuestions: function(sub){
+		HTTP.get('/questions/' + sub)
 		.then(response => {
 			console.log(response.data)
 			this.questions = response.data.question
@@ -430,7 +429,10 @@ methods:{
 			console.log(this.language)
 			return this.language
 		})
-	}
+	},
+    getPermission: function (){
+      return auth.getPermission()
+    }
 },
 mounted(){
 	this.getTrainingen();
@@ -550,7 +552,6 @@ a {
   color: #42b983;
 }
 .training{
-    border:1px solid #333333;
     margin-bottom: 20px;
 }
 .training h2{
@@ -576,8 +577,7 @@ a {
   font-size: 1.3rem;
   margin: 10px;
 }
-#selection .col-2{
-  display: inline-flex;
+#selection .col-3{
 }
 .modal .modal-dialog.modal-xxl {
     max-width: 95vw !important;
@@ -617,5 +617,8 @@ a {
 }
 .btn:hover{
 	background-color: #203780;
+}
+#selection .btn.add-btn{
+	font-size: 1rem;
 }
 </style>

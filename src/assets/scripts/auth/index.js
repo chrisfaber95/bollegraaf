@@ -21,7 +21,7 @@ export default{
         HTTP.post("user/login", data)
         .then(response => {
             console.log(response)
-            if(!response.data.error){
+            if(!response.data.err_code){
                 this.user.info.email = response.data.user.email;
                 localStorage.setItem('id_token', response.data.user.id_token)
                 localStorage.setItem('access_token', response.data.user.access_token)
@@ -38,7 +38,7 @@ export default{
                 router.push('home')
             }
             else{
-                alert(response.data.error)
+                alert(response.data.err)
             }
         })
         .catch(e => {
@@ -92,7 +92,7 @@ export default{
     },
     isAdmin(){
         if(this.authenticated == true){
-            if(localStorage.getItem('expires') > Date.now() && localStorage.getItem('access_token') && localStorage.getItem('permissions') == 2){
+            if(localStorage.getItem('expires') > Date.now() && localStorage.getItem('access_token') && (localStorage.getItem('permissions') == 2 || localStorage.getItem('permissions') == 5)){
                 console.log(this.user + ' 5')
                 return true;
             }
@@ -103,7 +103,7 @@ export default{
             }
         }
         else{
-            if(localStorage.getItem('expires') > Date.now() && localStorage.getItem('access_token') && localStorage.getItem('permissions') == 2){
+            if(localStorage.getItem('expires') > Date.now() && localStorage.getItem('access_token') && (localStorage.getItem('permissions') == 2 || localStorage.getItem('permissions') == 5)){
                 this.authenticated = true;
                 console.log(this.user + ' 7')
                 return true;
@@ -143,5 +143,11 @@ export default{
     },
     showInfo(){
         return this.user.info.userinfo;
+    },
+    getPermission: function (){
+      return localStorage.getItem('permissions')
+    },
+    getId: function (){
+      return localStorage.getItem('id_token')
     }
 }

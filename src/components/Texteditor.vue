@@ -8,7 +8,10 @@
 </template>
 
 <script>
-import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+//import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+
+import ClassicEditor from '@/assets/scripts/editor/ckeditor5-build-classic/build/ckeditor.js';
+
 export default {
   name: 'HelloWorld',
   props: [

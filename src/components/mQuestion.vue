@@ -1,33 +1,22 @@
 <template>
 	<div class="question"> 
-		<!--<draggable v-model="given_answers" @change="onChangeMQuestion">
-			<transition-group>
-				<div v-for="(question, index) in filteredQuestionAnswers(item.question_id)" :key="index">
-					<div>
-						{{question.answer_text}} - {{question.correct_answer}}
-					</div>
-				</div>
-			</transition-group>
-		</draggable>-->
-	<div class="row answers">
-		<div class="col-md-1">
-			<div class="ans" v-for="(element, index) in filteredAnswers" :key="index">
-				<i :class="element.fixed? 'fa fa-anchor' : 'glyphicon glyphicon-pushpin'" @click=" element.fixed=! element.fixed" aria-hidden="true"></i>
-				{{element.answer_text}}
-			</div>
-		</div>
-		<div class="col-md-9">
-			<draggable v-model="given_answers">
-				<transition-group>
-					<div class="ans" v-for="(element, index) in given_answers" :key="index">						
-						{{element.answer_text}}{{element.correct_answer}}
-					</div>
-				</transition-group>
-			</draggable>
-		</div>
-	</div>
-		<b-button id="save-btn" @click="saveAnswers(questionId)">Opslaan</b-button>
-		{{correct_answer}}/{{filteredAnswers.length}}
+		<b-button id="save-btn" @click="saveAnswers(questionId)" :disabled="checked_answers">{{$t("training.controleren")}}</b-button>
+		<table class="table table-striped">
+        <thead class="thead-dark">
+          <tr>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col" v-if="checked_answers">{{$t("training.correctanswer")}}</th>
+          </tr>
+        </thead>
+        <draggable v-model="given_answers" tag="tbody">
+          <tr v-for="(item, index) in given_answers" :key="item.multiAnswer_id">
+            <td scope="row"><p v-html="filteredAnswers[index].answer_text"></p></td>
+            <td class="move"><p v-bind:class="{ correct: checked_answers && given_answers[index].correct, wrong: checked_answers && !given_answers[index].correct}" v-html="given_answers[index].correct_answer"></p></td>
+            <td v-if="checked_answers"><p v-html="filteredAnswers[index].correct_answer"></p></td>
+          </tr>
+        </draggable>
+      </table>	  
 	</div>
 </template>
 
@@ -41,7 +30,8 @@ export default {
 		draggable
   },
   props: [
-    'questionId'
+    'questionId',
+	'page'
   ],
   data: function(){
     return{
@@ -53,7 +43,9 @@ export default {
 		current_question: null,		
 		editable: true,
 		isDragging: false,
-		delayedDragging: false
+		delayedDragging: false,
+		checked_answers: false,
+		dragging: false
     }
   },
  methods:{
@@ -62,13 +54,13 @@ export default {
         return one.order - two.order;
       });
     },
- //   onMove: function({ relatedContext, draggedContext }) {
-   //   const relatedElement = relatedContext.element;
-   //   const draggedElement = draggedContext.element;
-   //   return (
-   //     (!relatedElement || !relatedElement.fixed) && !draggedElement.fixed
-   //   );
-  //  },
+	onMove: function({ relatedContext, draggedContext }) {
+		const relatedElement = relatedContext.element;
+		const draggedElement = draggedContext.element;
+		return (
+			(!relatedElement || !relatedElement.fixed) && !draggedElement.fixed
+		);
+	},
 	getQuestion: function(){
 		console.log(this.questionId)
 		HTTP.get('/questions/single/'+this.questionId)
@@ -117,21 +109,34 @@ export default {
 				console.log("correct")
 				console.log(this.given_answers[item])
 				console.log(this.filteredAnswers[item])
+				this.given_answers[item].correct = true
 				
 				this.correct_answer = this.correct_answer + 1
 			}
 			else if(this.given_answers[item] != this.filteredAnswers[item]){
+				this.given_answers[item].correct = false
 				console.log("niet correct")
 				console.log(this.given_answers[item])
 				console.log(this.filteredAnswers[item])
 			}
 		}
+		this.checked_answers = true;
 		var data= {
 			question_id: quest,
 			correct_answers: this.correct_answer,
 			date: new Date(),
 			possible_answers: this.given_answers.length
 		}
+		if(question.length != this.correct_answer && this.correct_answer != 0){
+			++this.page.summary.part
+		}
+		else if(this.correct_answer == 0){
+			++this.page.summary.wrong
+		}
+		else if(question.length == this.correct_answer){
+			++this.page.summary.correct
+		}
+		++this.page.summary.amount
 		console.log(data)
 		HTTP.post('/progress/'+localStorage.id_token, data)
 		.then(response => {
@@ -262,5 +267,17 @@ p{
 .answers .col-md-9{
 	margin: 0;
 	padding: 5px;
+}
+.correct{
+	color: green;
+}
+.wrong{
+	color: red;
+}
+.ans {
+	height: 100%;
+}
+.move{
+	cursor: pointer;
 }
 </style>

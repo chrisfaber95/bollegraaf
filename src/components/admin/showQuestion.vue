@@ -4,40 +4,78 @@
 		<b-button  v-b-modal.modal-newquestion class="bewerk-btn">Vraag toevoegen</b-button>
 	</div>
 	<div class="row" v-for="question in filteredQuestions" v-bind:key="question.question_id">
-		<div class="col-1">
-			{{question.question_id}}
-		</div>
 		<div class="col-7">
 			<div v-html="question.question_text"></div>
 		</div>
-		<div class="col-2">
-			<b-button  v-b-modal.modal-question class="bewerk-btn" @click="changeQuestion(question.question_id)">Open vraag</b-button>
+		<div class="col-1">
+			{{language[question.language_id-1].name}}
 		</div>
-		<div class="col-2">		
-			<b-button @click="deleteQuestion(question.question_id)">Verwijder vraag</b-button>
+		<div class="col-1">
+			{{question.difficulty}}
+		</div>
+		<div class="col-1">
+			{{question.questiontype}}
+		</div>
+		<div class="col-1">
+			<b-button v-b-modal.modal-question  class="bewerk-btn" @click="selectedQuestion = question.question_id">Bewerk</b-button>
+		</div>
+		<div class="col-1">		
+			<b-button @click="deleteQuestion(question.question_id)">Verwijder</b-button>
 		</div>
 	</div>
 
 	<b-modal id="modal-question" size="xl" hide-footer hide-header v-if="selectedQuestion">
-		<div class="d-block">
-			<p>Vraag:</p>{{filteredQuestionAnswers[0].question_text}}
+		<div class="d-block" v-if="filteredQuestionAnswers[0].questiontype == 'tf' || filteredQuestionAnswers[0].questiontype == 'mc' || filteredQuestionAnswers[0].questiontype == 'm'">
+			<p>Vraag:</p>
+			<ckeditor :editor="editor" v-model="filteredQuestionAnswers[0].question_text" :config="editorConfig"></ckeditor>
 			<p>Antwoorden:</p>
 			<div class="row" v-for="(question, index) in filteredQuestionAnswers" v-bind:key="index">
-				{{question.answer_text}} - {{question.correct_answer}}
+				<div class="answer" v-if="question.questiontype == 'tf' || question.questiontype == 'mc' && question.multiAnswer_id != null">
+					<div class="row">
+						<div class="col-10">
+							<b-form-input
+								type="text" 
+								name="answer_text"
+								v-model="question.answer_text"
+								@change="question.value = question.answer_text"
+							>
+							</b-form-input>
+						</div>
+						<div class="col-2">
+							<b-form-checkbox
+								v-model="question.correct_answer"
+								name="flavour-1"
+								value="true"
+								unchecked-value="false"
+							></b-form-checkbox>
+						</div>
+					</div>					
+					<hr>
+				</div>			
+				<div class="answer" v-if="question.questiontype == 'm' && question.multiAnswer_id != null">
+					<div class="row">
+						<div class="col-5">
+							<ckeditor :editor="editor" v-model="question.answer_text" :config="editorConfig"></ckeditor>
+						</div>
+						<div class="col-5">
+							<ckeditor :editor="editor" v-model="question.correct_answer" :config="editorConfig"></ckeditor>
+						</div>
+					</div>
+					<hr>
+				</div>				
 			</div>
 		</div>
+		<div class="d-block">			
+			<EditDdQuestion ref="ddquestion" :question="selectedQuestion" :sub="selectedSub" v-if="filteredQuestionAnswers[0].questiontype == 'dd'"/>
+		</div>
 		<div class="buttons">
-			<b-button class="mt-3" block @click="closeModal()">Sluiten</b-button>
+			<b-button class="mt-3" block @click="saveEditQuestion(filteredQuestionAnswers)" v-if="filteredQuestionAnswers[0].questiontype == 'tf' || filteredQuestionAnswers[0].questiontype == 'mc' || filteredQuestionAnswers[0].questiontype == 'm'">Opslaan</b-button>
+			<b-button class="mt-3" block @click="$bvModal.hide('modal-question')">Sluiten</b-button>
 		</div>
 	</b-modal>
-	<b-modal id="modal-newquestion" size="xl" hide-footer hide-header>
+	
+	<b-modal id="modal-newquestion" size="xl" hide-footer hide-header ref="modalbody">
 		<div class="d-block">
-			<div class="row">
-				<div class="col-6">
-					<select v-model="newQuestion.language_id">
-						<option v-for="item in filteredLanguage" v-bind:key="item.language_id" v-bind:value="item.language_id">{{item.name}}</option>
-					</select>
-				</div>
 				<b-form-group id="input-group-2" label="Quetiontype:" label-for="input-1">
 					<b-form-select
 						type="text" 
@@ -48,11 +86,23 @@
 						<b-form-select-option value="null">Please select a questiontype</b-form-select-option>
 						<b-form-select-option value="tf">True/False</b-form-select-option>
 						<b-form-select-option value="mc">Multiple Choice</b-form-select-option>
-						<b-form-select-option value="dd" disabled>Drag & Drop</b-form-select-option>
+						<b-form-select-option value="dd">Drag & Drop</b-form-select-option>
 						<b-form-select-option value="m">Match</b-form-select-option>
 					</b-form-select>				
 				</b-form-group>
-				<div v-if="newQuestion.type == 'tf' || newQuestion.type == 'mc'">
+				<div v-if="newQuestion.type == 'tf' || newQuestion.type == 'mc'">				
+					<div class="row">
+						<div class="col-6">
+							<select v-model="newQuestion.language_id">
+								<option v-for="item in filteredLanguage" v-bind:key="item.language_id" v-bind:value="item.language_id">{{item.name}}</option>
+							</select>
+							<br>
+							<p>Moeilijkheid</p>
+							<select v-model="newQuestion.difficulty">
+								<option v-for="item in 5" v-bind:key="item" v-bind:value="item">{{item}}</option>
+							</select>
+						</div>
+					</div>
 					<b-form-group id="input-group-2" label="Question:" label-for="input-1">
 						<ckeditor :editor="editor" v-model="newQuestion.questionText" :config="editorConfig"></ckeditor>
 						<!--<b-form-input
@@ -65,58 +115,65 @@
 						</b-form-input>-->				
 					</b-form-group>
 					<b-form-group id="input-group-2" label="Antwoorden:" label-for="input-2">
-						<div class="answers" v-for="(item, index) in newQuestion.answers" v-bind:key="index">
-							<b-form-input
-								type="text" 
-								name="answer_text"
-								v-model="item.text"
-								value=""
-								@change="item.value = item.text"
-							>
-							</b-form-input>										
-						</div>
-						{{newQuestion.answers}}
-						<b-form-checkbox-group
-							id="checkbox-group-1"
-							v-model="newQuestion.correct_answer"
-							:options="newQuestion.answers"
-							name="flavour-1"
-						></b-form-checkbox-group>
-						{{newQuestion.correct_answer}}
+							<div class="answers row" v-for="(item, index) in newQuestion.answers" v-bind:key="index">
+								<div class="col-10">
+									<b-form-input
+										type="text" 
+										name="answer_text"
+										v-model="item.text"
+										value=""
+										@change="item.value = item.text"
+										v-if="newQuestion.type == 'tf'"
+									>
+									</b-form-input>		
+									<ckeditor :editor="editor" v-model="item.text" :config="editorConfig" v-if="newQuestion.type == 'mc'"></ckeditor>
+								</div>
+								<div class="col-2">
+								<b-form-checkbox
+									v-model="newQuestion.correct_answer[index]"
+									name="flavour-1"
+									value="true"
+									unchecked-value="false"
+								></b-form-checkbox>
+									{{newQuestion.correct_answer[index]}}
+								</div>
+							</div>
+						
 						<b-button v-if="newQuestion.type == 'mc' || newQuestion.type == 'm'" @click="extraAnswer">Voeg extra antwoord mogelijkheid toe</b-button>
 					</b-form-group>
 				</div>
 				
 				<div v-if="newQuestion.type == 'm'">
+					<div class="row">
+						<div class="col-6">
+							<select v-model="newQuestion.language_id">
+								<option v-for="item in filteredLanguage" v-bind:key="item.language_id" v-bind:value="item.language_id">{{item.name}}</option>
+							</select>
+							<br>
+							<p>Moeilijkheid</p>
+							<select v-model="newQuestion.difficulty">
+								<option v-for="item in 5" v-bind:key="item" v-bind:value="item">{{item}}</option>
+							</select>
+						</div>
+					</div>
 					<b-form-group id="input-group-2" label="Question:" label-for="input-1">
 						<ckeditor :editor="editor" v-model="newQuestion.questionText" :config="editorConfig"></ckeditor>			
 					</b-form-group>
 					<b-form-group id="input-group-2" label="Antwoorden:" label-for="input-2">
 						<div class="row answers" v-for="(item, index) in newQuestion.answers" v-bind:key="index">
 							<div class="col-6">
-								<b-form-input
-									type="text" 
-									name="answer_text"
-									v-model="item.text"
-									value=""
-									@change="item.value = item.text"
-								>
-								</b-form-input>
+								<ckeditor :editor="editor" v-model="item.text" :config="editorConfig"></ckeditor>
 							</div>
 							<div class="col-6">
-								<b-form-input
-									type="text" 
-									name="correct_answer"
-									v-model="newQuestion.correct_answer[index]"
-									value=""
-								>
-								</b-form-input>
+								<ckeditor :editor="editor" v-model="newQuestion.correct_answer[index]" :config="editorConfig"></ckeditor>
 							</div>
 						</div>
 						<b-button v-if="newQuestion.type == 'mc' || newQuestion.type == 'm'" @click="extraAnswer">Voeg extra antwoord mogelijkheid toe</b-button>
 					</b-form-group>
-				</div>		
-			</div>
+				</div>
+				<div id="dragdrop" v-if="newQuestion.type == 'dd'">
+					<DdQuestion ref="ddquestion"/>
+				</div>	
 		</div>
 		<div class="buttons">
 			<b-button class="mt-3" block @click="addQuestion()">Vraag opslaan</b-button>
@@ -129,7 +186,10 @@
 <script>
 //import { Carousel, Slide } from 'vue-carousel';
 import {HTTP} from '@/assets/scripts/http-common.js'
-import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import DdQuestion from '@/components/admin/newDdQuestion.vue'
+import EditDdQuestion from '@/components/admin/editDdQuestion.vue'
+import ClassicEditor from '@/assets/scripts/editor/build/ckeditor.js';
+//import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 //import ShowInfo from '@/components/admin/showInformation.vue';
 //import ClassicEditor from '@/assets/ckeditor-own/src/ckeditor.js';
 //import ClassicEditor from '@ckeditor/ckeditor5-editor-classic/src/classiceditor';
@@ -151,6 +211,8 @@ export default {
 //    Slide,
 //	draggable,
 //	ShowInfo
+	DdQuestion,
+	EditDdQuestion
   },
 data: function(){
 	return{
@@ -165,7 +227,8 @@ data: function(){
 			type: "null",
 			answers: [],
 			language_id: 1,
-			correct_answer: []
+			correct_answer: [],
+			difficulty: 1
 		},
 		newQuestiontype: "null",
 		correct_answer: [],
@@ -189,20 +252,25 @@ methods:{
 		})
 	},
 	addQuestion: function(){
-		var data = {
-			subId: this.selectedSub,
-			question: this.newQuestion
+		if(this.newQuestion.type == 'dd'){
+			this.$refs.ddquestion.addQuestion(this.selectedSub)
 		}
-		console.log(data)
-		HTTP.post('/questions', data)
-		.then(response => {
-			console.log(response.data)
-		this.questions = response.data
-	//		console.log(this.questions)
-			return this.questions
-		})
-		this.getQuestions()
-		this.closenewModal()
+		else{
+			var data = {
+				subId: this.selectedSub,
+				question: this.newQuestion
+			}
+			console.log(data)
+			HTTP.post('/questions', data)
+			.then(response => {
+				console.log(response.data)
+			this.questions = response.data
+		//		console.log(this.questions)
+				return this.questions
+			})
+		}
+			this.getQuestions()
+			this.closenewModal()
 	},
 	deleteQuestion:function(qId){
 		alert(qId)
@@ -228,6 +296,7 @@ methods:{
 				value: 'false'
 			}
 			]
+			this.newQuestion.correct_answer = ['false', 'false']
 		}
 		else if(this.newQuestion.type == 'mc' || this.newQuestion.type == 'm'){
 			this.extraAnswer()
@@ -240,6 +309,13 @@ methods:{
 			value: '',
 		}
 		this.newQuestion.answers.push(answer)
+		if(this.newQuestion.type == 'mc'){
+			this.newQuestion.correct_answer.push('false')
+		}
+		else if(this.newQuestion.type == 'm'){
+			this.newQuestion.correct_answer.push('')
+		}
+		
 	},
 	changeCorrectAnswer: function(){
 		console.log(this.correct_answer)
@@ -253,6 +329,17 @@ methods:{
 			this.language = response.data.language
 			console.log(this.language)
 			return this.language
+		})
+	},
+	saveEditQuestion: function(edit){
+		for(var item in edit){
+			console.log(edit[item])
+		}
+		HTTP.put('/questions/'+edit[0].question_id, edit)
+		.then(response => {
+            console.log(response.data)
+			alert(response.data.message)
+			this.getQuestions()
 		})
 	}
 },
@@ -382,5 +469,11 @@ a {
 	
 #selection{
   padding: 10px;
+}
+#dragdrop{
+	width: 100%;
+}
+.answer{
+width: 100%;
 }
 </style>

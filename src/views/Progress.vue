@@ -1,8 +1,11 @@
 <template>
   <div class="voortgang">
     <Header />
-    <div class="container-fluid">
-        <h2 class="pagetitle">Voortgang</h2>
+    <div class="container-fluid">        
+		<div class="title">
+			<h2 class="pagetitle">Voortgang</h2>
+			<hr>
+		</div>
 		<div class="progressblock">
 			<div class="progressSub" v-for="sub in filteredProgress" v-bind:key="sub.sId">
 				{{sub.tName}} {{sub.oName}}
@@ -81,7 +84,8 @@ export default {
 .voortgang .container-fluid{
     background-color: #ffffff;
     min-height: 100vh;
-    display: inline-flex;
+    display: block;
+	padding: 3%;
 }
 
 .voortgang .container-fluid>.row{

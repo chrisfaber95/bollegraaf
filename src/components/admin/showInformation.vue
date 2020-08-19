@@ -1,34 +1,49 @@
 <template>
   <div class="trainingInformation">
-	<draggable v-model="info" @change="onChange">
-		<transition-group>
-			<div class="pages" v-for="element in info" :key="element.iId">
-				<div v-if="element.iTitle != '' &&element.iPage != 0">
-					{{element.iTitle}} -- {{language[element.language_id-1].name}}
-				</div>
-			</div>
-		</transition-group>
-	</draggable>
+	<div class="row">
+		<!--<div class="col-6">		
+			<draggable v-model="info" @change="onChange">
+				<transition-group>
+					<div class="pages" v-for="element in filteredInfo" :key="element.iId">
+						<div v-if="element.iTitle != '' &&element.iPage != 0">
+							{{element.iTitle}} -- {{language[element.language_id-1].name}}
+						</div>
+					</div>
+				</transition-group>
+			</draggable>
+		</div>-->
+		<div class="col-6">
+			<p>Kies informatie taal:</p>
+			<select v-model="currentLanguage">
+				<option v-for="item in filteredLanguage" v-bind:key="item.language_id" v-bind:value="item.language_id">{{item.name}}</option>
+			</select>
+		</div>
+	</div>
+	
+		<hr/>
 	<carousel 
 		:per-page="1" 
 		:mouse-drag="false" 
 		paginationColor='#000000'
 		paginationActiveColor="#999999"
 		paginationPosition= "top"
-	>
-		<slide class="editors" v-for="edit in info" v-bind:key="'info'+edit.iId">
-			<div class="">
-				<label>Paginanummer: </label><input v-model="edit.iPage" :type="'number'" />
-			</div>
+	>	
+		<slide class="editors" v-for="edit in filteredInfo" v-bind:key="'info'+edit.iId">		
 			<div class="">
 				<label>Titel: </label><input v-model="edit.iTitle" :type="'text'" />
 			</div>
 			<div class="">
+				<label>Paginanummer: </label><input v-model="edit.iPage" :type="'number'" />
+			</div>
+			<div class="">
+				<label>Taal: </label>			
+				<select v-model="edit.language_id">
+					<option v-for="item in filteredLanguage" v-bind:key="item.language_id" v-bind:value="item.language_id">{{item.name}}</option>
+				</select>
+			</div>
+			<div class="">
 				<b-button @click="deleteInformation(edit.iId)">Delete pagina</b-button>
 				<b-button @click="saveInformation(edit)">Pagina opslaan</b-button>
-					<select v-model="edit.language_id">
-						<option v-for="item in filteredLanguage" v-bind:key="item.language_id" v-bind:value="item.language_id">{{item.name}}</option>
-					</select>
 			</div>			
 			<div class="">
 				<ckeditor :editor="editor" v-model="edit.iText" :config="editorConfig"></ckeditor>
@@ -43,17 +58,13 @@
 						v-model="newRef.subId"
 						id= "input-5"
 					></b-form-select>
-				<b-button @click="addTrainingRef(edit.iId)">Referentie opslaan</b-button>
+				<b-button @click="addTrainingRef(edit.iId)" v-if="newRef.subId != 0 && newRef.refText != '' ">Referentie opslaan</b-button>
 				</b-form-group>
-			<b-form-group id="input-group-3" label="Referentie:" label-for="input-6">
-				<b-form-select
-						type="text" 
-						name="refs"
-						:options="filteredReferentions"
-						v-model="selectedRef"
-						id= "input-6"
-						v-if="referentions != null"
-				></b-form-select>
+			<b-form-group id="input-group-3" label="Referentie:" label-for="input-6" v-if="referentions != null">
+				<select v-model="selectedRef">
+					<option v-for="item in filteredReferentions" v-bind:key="item.language_id" v-bind:value="item.riId">{{item.oiId}} -- {{item.riText}}</option>
+				</select>
+				<b-button @click="deleteReferentie(selectedRef)">Delete referention</b-button>
 			</b-form-group>
 			</div>			
 			
@@ -65,9 +76,10 @@
 <script>
 import { Carousel, Slide } from 'vue-carousel';
 import {HTTP} from '@/assets/scripts/http-common.js'
-import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+//import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import ClassicEditor from '@/assets/scripts/editor/build/ckeditor.js';
 	
-import draggable from 'vuedraggable'
+//import draggable from 'vuedraggable'
 	
 export default {
   name: 'HelloWorld',
@@ -78,7 +90,7 @@ export default {
   components:{
     Carousel,
     Slide,
-	draggable
+//	draggable
   },
 data: function(){
 	return{
@@ -102,6 +114,7 @@ data: function(){
 		},
         editorData: '',
         language: null,
+        currentLanguage: null,
 		referentions: null
 	}
 },
@@ -148,12 +161,14 @@ methods:{
 		this.getInformation()
       },
       deleteInformation: function(iId){
+		if(confirm("Do you really want to delete?")){
         HTTP.delete('information/'+iId)
           .then(response => {
             console.log(response.data)
 			alert(response.data.message)
 			this.getInformation()
           })
+		}
       },
 	getReferentions: function(){
 		HTTP.get('referentions')
@@ -163,19 +178,39 @@ methods:{
 			console.log(this.referentions)
 		})		
 	},
+      deleteReferentie: function(iId){
+		if(confirm("Do you really want to delete?")){
+			HTTP.delete('referentions/'+iId)
+			.then(response => {
+				console.log(response.data)
+				alert(response.data.message)
+				this.getReferentions()
+			})
+		}
+      },
       closeModal: function(){
         this.$bvModal.hide('modal-3')
       },
 	onChange: function(evt){
 		console.log(evt)
-		console.log(this.info)
+		console.log(this.filteredInfo)
+		
+		var filtered = []
+		var filteredIds = []
 		for(var item in this.info){
-			if(this.info[item].iPage != 0){
-				this.info[item].iPage = item
-				HTTP.put('information/update/'+this.info[item].iId, this.info[item])
+			if(!filteredIds.includes(this.info[item].iId) && (this.info[item].language_id == this.currentLanguage || this.info[item].iText == '')){
+				filtered.push(this.info[item])
+				filteredIds.push(this.info[item].iId)
+			}
+		}
+		
+		console.log(filtered)
+		for(var page in filtered){
+			if(filtered[page].iPage != 0){
+				filtered[page].iPage = page
+				HTTP.put('information/update/'+filtered[page].iId, filtered[page])
 					.then(response => {
 					console.log(response.data)
-					alert(response.data.message)
 				})
 			}
 		}	
@@ -242,6 +277,21 @@ computed:{
      filteredLanguage: function(){
          return this.language
      },
+		filteredInfo: function(){
+		var filtered = []
+		var filteredIds = []
+		for(var item in this.info){
+			if(!filteredIds.includes(this.info[item].iId) && (this.info[item].language_id == this.currentLanguage || this.info[item].iText == '')){
+				if(this.info[item].iText == ''){
+					this.info[item].language_id == this.currentLanguage
+				}
+				filtered.push(this.info[item])
+				filteredIds.push(this.info[item].iId)
+			}
+		}
+		console.log(filtered)
+		return filtered
+	}
 },
 watch:{
 	trainingen: function(){
@@ -339,9 +389,18 @@ a {
   padding: 10px;
 }
 .pages{
-	width: 20%;
 	padding: 10px;
 	border: 1px solid #cccccc;
 	background: #eeeeee
+}
+</style>
+<style>
+.ck-color-ui-dropdown .ck-dropdown__panel{
+	height: 140px;
+	overflow-y: scroll;
+}
+.ck-font-family-dropdown .ck-dropdown__panel{
+	height: 140px;
+	overflow-y: scroll;
 }
 </style>

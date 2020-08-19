@@ -7,20 +7,19 @@
 		<div class="infotext">			
 			<div class="row">
 				<div class="col-lg-6">
-					<span><b>Training:</b> {{first_sub.tName}}</span>
+					<span><b>{{ $t("trainingblock.training") }}:</b> {{first_sub.tName}}</span>
 					<hr>
 				</div>
 			</div>
 			<div class="row">
 				<div class="col-lg-6">
-					<p><b>Trainingsprogramma:</b> {{first_sub.tName}}</p>
-					<p><b>Onderdeel:</b> {{first_sub.oName}}</p>
-					<p><b>Training:</b> {{first_sub.sName}}</p>
-					<p><b>Tijdsduur:</b> {{first_sub.time}}</p>
+					<p><b>{{ $t("trainingblock.program") }}:</b> {{first_sub.tName}}</p>
+					<p><b>{{ $t("trainingblock.subject") }}:</b> {{first_sub.oName}}</p>
+					<p><b>{{ $t("trainingblock.section") }}:</b> {{first_sub.sName}}</p>
 				</div>
 				<div class="col-lg-6">
-					<span>Inhoud van deze training</span>
-					<p></p>
+					<!--<span>Inhoud van deze training</span>
+					<p></p>-->
 				</div>
 			</div>
 			<div class="row">
@@ -28,7 +27,7 @@
 					<b-progress :value="finished" :max="followed_trainingen.length" show-progress animated></b-progress>
 				</div>
 				<div class="col-lg-4 start-btn">
-					<router-link :to="'/trainingpage/'+first_sub.subonderdeel_id"><b-button class="start-btn">Hervat training</b-button></router-link>
+					<router-link :to="'/trainingpage/'+first_sub.subonderdeel_id"><b-button class="start-btn">{{ $t("trainingblock.continue") }}</b-button></router-link>
 				</div>
 			</div>
 		</div>

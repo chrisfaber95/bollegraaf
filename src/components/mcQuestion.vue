@@ -1,15 +1,14 @@
 <template>
 	<div class="question">
+		<b-button id="save-btn" @click="saveAnswers(questionId)" :disabled="checked_answers">{{$t("training.controleren")}}</b-button>
 		<div class="row answer" v-for="(question, index) in filteredAnswers" v-bind:key="index">
 			<b-form-checkbox
 				v-model="given_answers[index]"
 				name="checkbox-1"
 				@change="answerChanged(index)"
 				class="answer_check"
-			></b-form-checkbox>{{question.answer_text}} - {{question.correct_answer}}
+			></b-form-checkbox><p v-bind:class="{ correct: checked_answers && (question.correct_answer == given_answers[index] && question.correct_answer != 'false'), wrong: checked_answers && question.correct_answer != given_answers[index]}" v-html="question.answer_text"></p> 
 		</div>		
-		<b-button id="save-btn" @click="saveAnswers(questionId)">Opslaan</b-button>
-		{{correct_answer}}/{{filteredAnswers.length}}
 	</div>
 </template>
 
@@ -19,7 +18,8 @@ import {HTTP} from '@/assets/scripts/http-common.js'
 export default {
   name: 'HelloWorld',
   props: [
-    'questionId'
+    'questionId',
+	'page'
   ],
   data: function(){
     return{
@@ -29,6 +29,7 @@ export default {
 		given_answers: [],
 		correct_answer: 0,
 		current_question: null,
+		checked_answers: false
     }
   },
  methods:{
@@ -71,12 +72,25 @@ export default {
 				console.log("niet correct")
 			}
 		}
+		this.checked_answers = true;
 		var data= {
 			question_id: quest,
 			correct_answers: this.correct_answer,
 			date: new Date(),
 			possible_answers: question.length
 		}
+		console.log(this.page.summary.part)
+		console.log(this.page.summary)
+		if(question.length != this.correct_answer && this.correct_answer != 0){
+			++this.page.summary.part
+		}
+		else if(this.correct_answer == 0){
+			++this.page.summary.wrong
+		}
+		else if(question.length == this.correct_answer){
+			++this.page.summary.correct
+		}
+		++this.page.summary.amount
 		HTTP.post('/progress/'+localStorage.id_token, data)
 		.then(response => {
 			console.log(response.data)
@@ -144,5 +158,11 @@ p{
 }
 .answer .active{
 	background-color: #345464 !important;
+}
+.correct{
+	color: green;
+}
+.wrong{
+	color: red;
 }
 </style>
