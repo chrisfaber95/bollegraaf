@@ -13,21 +13,18 @@
 
                     <b-collapse id="nav-collapse" is-nav>
                     <b-navbar-nav>
-                        <router-link to="/home" tag="b-nav-item">Home</router-link>
-                        <b-nav-item-dropdown :text="getHeader">
-                            <router-link :to="{ name: 'Profile'}" tag="b-dropdown-item">Profiel</router-link>
-                            <router-link :to="{ name: 'Settings'}" tag="b-dropdown-item">Instellingen</router-link>
+                        <router-link to="/home" tag="b-nav-item">{{ $t("header.home") }}</router-link>
+                        <b-nav-item-dropdown :text="$t('header.welcome')  + getHeader">
+                            <router-link :to="{ name: 'Profile'}" tag="b-dropdown-item">{{ $t("header.profile") }}</router-link>
+                            <router-link :to="{ name: 'Settings'}" tag="b-dropdown-item">{{ $t("header.settings") }}</router-link>
                         </b-nav-item-dropdown>
-                        <b-nav-item-dropdown text="Trainingen">
-                            <router-link :to="{ name: 'Training', params: {page: 'followed' }}" tag="b-dropdown-item">Mijn trainingen</router-link>
-                            <router-link :to="{ name: 'Training', params: {page: 'all' }}" tag="b-dropdown-item">Alle trainingsprogramma's</router-link>
-                        </b-nav-item-dropdown>
-                        <router-link to="/progress" tag="b-nav-item">Voortgang</router-link>
-                        <router-link :to="{ name: 'Training', params: {page: 'tests' } }" tag="b-nav-item">Eindtoetsen</router-link>
+                        <router-link to="/training" tag="b-nav-item">{{ $t("header.training") }}</router-link>
+                        <router-link to="/progress" tag="b-nav-item">{{ $t("header.progress") }}</router-link>
+                        <router-link :to="{ name: 'Training', params: {page: 'tests' } }" tag="b-nav-item">{{ $t("header.exams") }}</router-link>
                         <div id="bericht-navlink">
-                            <router-link to="/messages" tag="b-nav-item">Berichten {{notReaded}}</router-link>
+                            <router-link to="/messages" tag="b-nav-item">{{ $t("header.message") }} {{notReaded}}</router-link>
                             <div v-if="notOpenedMail" class="berichtheader-blok">
-                                <p>Berichten</p>
+                                <p>{{ $t("header.message") }}</p>
                                 <hr>
                                 <p>{{notOpenedMail.mDate}}</p>
                                 <p>{{notOpenedMail.mSubject}}</p>
@@ -35,13 +32,16 @@
                                 <router-link to="/messages" tag="b-nav-item">Bekijk alle berichten</router-link>
                             </div>
                         </div>
-                        <router-link to="/admin" tag="b-nav-item" v-if="permissions == 2">Admin</router-link>
+                        <router-link to="/admin" tag="b-nav-item" v-if="permissions == 2">{{ $t("header.admin") }}</router-link>
                     </b-navbar-nav>
 
                     <!-- Right aligned nav items -->
-                    <b-navbar-nav class="ml-auto">
-                        <router-link to="/help" tag="b-nav-item">Help</router-link>
-                        <b-button  v-b-modal.modal-1 tag="b-nav-item">Afsluiten</b-button>
+                    <b-navbar-nav class="ml-auto">						
+						<select v-model="language_code">
+							<option v-for="item in filteredLanguage" v-bind:key="item.language_id" v-bind:value="item.code">{{item.name}}</option>
+						</select>
+                        <router-link to="/help" tag="b-nav-item">{{ $t("header.help") }}</router-link>
+                        <b-button  v-b-modal.modal-1 tag="b-nav-item">{{ $t("header.quit") }}</b-button>
                     </b-navbar-nav>
                     </b-collapse>
                 </b-navbar>
@@ -79,7 +79,10 @@ export default {
         permissions: 1,
         breadcrumbList: null,
         notOpenedMail: null,
-        notReaded: 0
+        notReaded: 0,
+        language: null,
+		language_code: null,
+		language_id: 0
     }
   },
   methods:{
@@ -88,7 +91,7 @@ export default {
         return ""
       },
       getHeaderName: function(){
-          return "Welkom, " + JSON.parse(localStorage.getItem('userinfo'))[0].name + " " + JSON.parse(localStorage.getItem('userinfo'))[0].surname
+          return ", " + JSON.parse(localStorage.getItem('userinfo'))[0].name + " " + JSON.parse(localStorage.getItem('userinfo'))[0].surname
       },
       closeProgram: function(id){
           if(id == 0){
@@ -117,6 +120,15 @@ export default {
       },
       searchLatestNotOpened(mail){
           return mail.isOpened == 0;
+      },
+      getLanguage: function(){
+          HTTP.get('settings/language/')
+          .then(response => {
+            this.language = response.data.language
+            console.log(this.language)
+			this.language_code = localStorage.getItem('language_code')
+            return this.language
+          })
       }
   },
   mounted(){
@@ -125,19 +137,34 @@ export default {
       this.updateList();
       console.log(this.breadcrumbList);
       this.getLatestMail();
+      this.getLanguage();
  },
  watch: {
      '$route' (){
          this.updateList()
-     }
+     },
+	language_code: function(){
+		console.log(this.language)
+		localStorage.setItem('language_code', this.language_code)
+		for(var item in this.language){
+			if(this.language[item].code == this.language_code){
+				this.language_id = this.language[item].language_id
+			}
+		}
+		console.log(localStorage.language_code)
+		this.$i18n.locale = localStorage.language_code
+	}
  },
  computed: {
      getHeader: function(){
-         var head = 'Welkom';
+         var head = '';
          if(JSON.parse(localStorage.getItem('userinfo')) != null){
-            head = "Welkom, " + JSON.parse(localStorage.getItem('userinfo'))[0].name + " " + JSON.parse(localStorage.getItem('userinfo'))[0].surname
+            head = ", " + JSON.parse(localStorage.getItem('userinfo'))[0].name + " " + JSON.parse(localStorage.getItem('userinfo'))[0].surname
          }
          return head;
+     },
+     filteredLanguage: function(){
+         return this.language
      }
  },
 }
@@ -175,6 +202,7 @@ export default {
     background-color: unset;
     border-color: unset;
     color: #efefef;
+	display: inline-flex;
 }
 #breadcrumb .btn-secondary:hover{
     background-color: unset;

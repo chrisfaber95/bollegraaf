@@ -36,6 +36,14 @@ const routes = [
     component: () => import(/* webpackChunkName: "about" */ '../views/Login.vue')
   },
   {
+    path: '/passreset',
+    name: 'Passreset',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "about" */ '../views/Passreset.vue')
+  },
+  {
     path: '/messages',
     name: 'Messages',
     // route level code-splitting
@@ -111,7 +119,7 @@ const routes = [
     }
   },
   {
-    path: '/training/:page',
+    path: '/training/',
     name: 'Training',
     props: true,
     // route level code-splitting

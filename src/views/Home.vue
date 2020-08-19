@@ -1,36 +1,36 @@
 <template>
-  <div class="home">
+<div class="home">
     <Header />
     <div class="container-fluid">
-      <div class="row">
-        <div class="col-lg-7">
-          <div class="trainingfollow">
-            <h3>Mijn trainingen</h3>
-            <hr>
-            <Training followed="true"/>
-            <router-link :to="{ name: 'Training', params: {page: 'followed' }}" :tag="link">Bekijk al mijn trainingen</router-link>
-          </div>
-          <div class="trainingall">
-            <h3>Alle trainingen</h3>
-            <hr>
-            <Training followed="false"  :amount="all"/>
-          </div>
-        </div>
-        <div class="col-lg-5">
-          <div class="voortgang">
-            <h3>Mijn voortgang</h3>
-            <Progress />
-            <p>Bekijk de hele voortgang</p>
-          </div>
-          <div class="Eindtoetsen">
-            <h3>Eindtoetsen</h3>
-            <p>Er zijn eindtoetsen beschikbaar</p>
-            <Quiz/>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+		<div class="row">
+			<div class="col-lg-7">
+				<div class="trainingfollow">
+					<h3>Mijn trainingen</h3>
+					<hr>
+					<b>{{ $t("message.followTraining") }}</b>
+					<div class="trainingblock" v-for="item in filteredTraining" v-bind:key="item.training_id">
+						<Training v-bind:training="item" ref="train"/>
+					</div>					
+					<router-link :to="{ name: 'Training'}" :tag="link">{{ $t("message.showTraining") }}</router-link>
+				</div>
+			</div>
+			<div class="col-lg-5">
+				<div class="voortgang">
+					<h3>Mijn voortgang</h3>
+					<hr/>
+					<Progress />
+					<p>Bekijk de hele voortgang</p>
+				</div>
+				<div class="Eindtoetsen">
+					<h3>Eindtoetsen</h3>
+					<hr />
+					<p>Er zijn eindtoetsen beschikbaar</p>
+					<Quiz/>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
 </template>
 
 <script>
@@ -52,45 +52,41 @@ export default {
   data: function(){
     return{
       trainingen: [],
-      followed: [],
-      training1: "pers"
+      followed: []
     }
   },
   methods:{
     getTrainingen: function(){
-      HTTP.get('training')
-      .then(response =>{
-        this.trainingen = response.data.training
-        console.log(this.trainingen);
-      })
-    },
-    getFollowedTraining: function(){
-      HTTP.get('user/'+localStorage.getItem('id_token')+'/training')
-      .then(response =>{
-        this.followed = response.data.training;
-        console.log(this.followed)
-      })
+		HTTP.get('training/user/'+localStorage.id_token)
+			.then(response =>{
+			this.trainingen = response.data.training
+		})
     }
   },
-  created(){
-  },
+	created(){
+	},
+	mounted(){
+	this.getTrainingen()
+		console.log(this.$refs)
+		
+		this.$i18n.locale = localStorage.language_code
+	},
   computed: {
     filteredTraining: function(){
-      return this.trainingen;
-    },
-    filteredGevolgd: function(){
-      const filteredFollowed = []
-      for(var item in this.followed){
-          if(this.followed[item].percentage_finished != null && this.followed[item].percentage_finished != 100){
-            filteredFollowed.push(this.followed[item]);
-            break;
-          }
-      }
-      console.log(filteredFollowed)
-      return filteredFollowed
-     // return this.followed;
+      var filtered = []
+		var filteredIds = []
+		for(var item in this.trainingen){
+			if(!filteredIds.includes(this.trainingen[item].training_id)){
+				filtered.push(this.trainingen[item])
+				filteredIds.push(this.trainingen[item].training_id)
+			}
+			if(filtered.length == 4){
+				break;  
+			}
+		}
+		return filtered
+        
     }
-
   },
 }
 </script>
@@ -117,4 +113,15 @@ export default {
   .trainingfollow > a{
     padding: 10px 0;
   }
+	.voortgang{
+    margin-bottom: 20px;
+    margin-top: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(33,33,33, 0.2);
+
+	}
+hr{
+	border: 1px solid rgba(255,165,0, 1);
+    border-bottom: 1px solid rgba(33,33,33, 0.2);
+}
 </style>

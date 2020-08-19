@@ -8,7 +8,8 @@ export default{
             email: '',
             userinfo:[]
         },
-        permissions: 1
+        permissions: 1,
+		language_code: 'en'
 
     },
     login(email, pass){
@@ -20,21 +21,24 @@ export default{
         HTTP.post("user/login", data)
         .then(response => {
             console.log(response)
-            if(!response.data.error){
+            if(!response.data.err_code){
                 this.user.info.email = response.data.user.email;
                 localStorage.setItem('id_token', response.data.user.id_token)
                 localStorage.setItem('access_token', response.data.user.access_token)
                 localStorage.setItem('expires', Date.now() + response.data.user.expires_in)
                 localStorage.setItem('info', response.data.user.email)
                 localStorage.setItem('permissions', response.data.user.permissions)
-                this.user.permissions = response.data.user.permissions;
+                localStorage.setItem('language_code', response.data.user.language_code)
+                this.user.permissions = response.data.user.language_code;
+				console.log(response.data.user)
+                this.user.language_code = response.data.user.language_code;
                 this.user.authenticated = true;
 
                 this.getInfo()
                 router.push('home')
             }
             else{
-                alert(response.data.error)
+                alert(response.data.err)
             }
         })
         .catch(e => {
@@ -53,7 +57,7 @@ export default{
             email: email,
             pass: pass
         }
-        HTTP.post("user/register", data)
+        HTTP.post("user/add", data)
         .then(response => {
             console.log(response)
         })
@@ -88,7 +92,7 @@ export default{
     },
     isAdmin(){
         if(this.authenticated == true){
-            if(localStorage.getItem('expires') > Date.now() && localStorage.getItem('access_token') && localStorage.getItem('permissions') == 2){
+            if(localStorage.getItem('expires') > Date.now() && localStorage.getItem('access_token') && (localStorage.getItem('permissions') == 2 || localStorage.getItem('permissions') == 5)){
                 console.log(this.user + ' 5')
                 return true;
             }
@@ -99,7 +103,7 @@ export default{
             }
         }
         else{
-            if(localStorage.getItem('expires') > Date.now() && localStorage.getItem('access_token') && localStorage.getItem('permissions') == 2){
+            if(localStorage.getItem('expires') > Date.now() && localStorage.getItem('access_token') && (localStorage.getItem('permissions') == 2 || localStorage.getItem('permissions') == 5)){
                 this.authenticated = true;
                 console.log(this.user + ' 7')
                 return true;
@@ -139,5 +143,11 @@ export default{
     },
     showInfo(){
         return this.user.info.userinfo;
+    },
+    getPermission: function (){
+      return localStorage.getItem('permissions')
+    },
+    getId: function (){
+      return localStorage.getItem('id_token')
     }
 }

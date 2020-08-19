@@ -4,26 +4,31 @@
     <div class="container-fluid">
         <h2 class="pagetitle">Admin</h2>
         <div class="admin-block">
-            <div class="row">  
+            <div class="row">
                 <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12">
-                    <h3><font-awesome-icon icon="users" /></h3><h4>Users</h4>
-                    <b-button @click="changeTopic('account', 'list')">Overzicht</b-button>
-                    <b-button @click="changeTopic('account', 'add')">Toevoegen</b-button>
-                        <hr />
-
-                    <h3><font-awesome-icon icon="book-open" /></h3><h4>Training</h4>
-                    <b-button @click="changeTopic('training', 'list')">Overzicht</b-button>
-                   <!-- <b-button @click="changeTopic('training', 'add')">Toevoegen</b-button>-->
-                    <b-button @click="changeTopic('training', 'suggesties')">Suggesties</b-button>
-                        <hr />
-                
-				<h3><font-awesome-icon icon="file" /></h3><h4>Exam</h4>
-                    <b-button @click="changeTopic('test', 'list')">Overzicht</b-button>
-                    <b-button @click="changeTopic('test', 'add')">Toevoegen</b-button>
-                </div>
+					<div class="users" v-if="getPermission() == 2">
+						<font-awesome-icon icon="users" />
+						<b-dropdown id="user-menu" :text='$t("admin.words.users")'>
+							<b-dropdown-item @click="changeTopic('account', 'list')">{{ $t("admin.words.overview") }}</b-dropdown-item>
+							<b-dropdown-item @click="changeTopic('account', 'add')">{{ $t("admin.words.add") }}</b-dropdown-item>
+						</b-dropdown>
+						<hr />
+					</div>
+					<font-awesome-icon icon="book-open" />
+					<b-dropdown id="user-menu" :text='$t("admin.words.training")'>
+						<b-dropdown-item @click="changeTopic('training', 'list')">{{ $t("admin.words.overview") }}</b-dropdown-item>
+					</b-dropdown>
+					<hr />
+					
+					<font-awesome-icon icon="file" />
+					<b-dropdown id="user-menu" :text='$t("admin.words.exam")'>
+						<b-dropdown-item @click="changeTopic('test', 'list')">{{ $t("admin.words.overview") }}</b-dropdown-item>
+						<b-dropdown-item @click="changeTopic('test', 'add')">{{ $t("admin.words.add") }}</b-dropdown-item>
+					</b-dropdown>
+				</div>
                 <div class="col-xl-10 col-lg-10 col-md-12 col-sm-12 col-xs-12">
                     <div class="topic-block">
-                        <Adminaccount :setting ="setting"  v-if="topic=='account'"/>
+                        <Adminaccount :setting ="setting"  v-if="topic=='account' && getPermission() == 2" />
                         <Admintraining  :setting="setting"  v-if="topic=='training'"/>
                         <Admintest  :setting="setting"  v-if="topic=='test'"/>
                     </div>
@@ -66,6 +71,9 @@ export default {
     },
     getEmail: function (){
       return localStorage.getItem('info')
+    },
+    getPermission: function (){
+      return auth.getPermission()
     },
     changeTopic: function(topic, setting){
         this.topic = topic
@@ -113,4 +121,17 @@ export default {
   #progress{
       width: 33%;
   }
+	
+.btn{
+	background-color: #96BF31;
+}
+.btn:hover{
+	background-color: #203780;
+}
+
+@media only screen and (max-width: 768px) {
+.admin-block .btn {
+    width: 30%;
+  }
+}
 </style>
