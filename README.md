@@ -12,7 +12,7 @@ npm run serve
 
 ### Compiles and minifies for production
 ```
-npm run build
+Put the contents of the dist folder into the html folder on the server
 ```
 
 ### Lints and fixes files
