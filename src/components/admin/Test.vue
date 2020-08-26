@@ -2,20 +2,30 @@
   <div class="training">
         <h2>Instellingen</h2>
         <hr>
-		<h3>Vertalingen</h3>
-		<input ref="file" id="file" type="file" @change="handleFileUpload()" accept=".csv">
-		<b-button @click="sendFile()">Toevoegen</b-button>
-		<b-button @click="retrieveFile()">Download translation csv</b-button>
+		<div>
+			<h3>Vertalingen</h3>
+			<input ref="file" id="file" type="file" @change="handleFileUpload()" accept=".csv">
+			<b-button @click="sendFile()">Toevoegen</b-button>
+			<b-button @click="retrieveFile()">Download translation csv</b-button>
+		</div>
+		<div>			
+			<h3>Wachtwoord mail</h3>
+			<Maileditor />
+		</div>
   </div>
 </template>
 
 <script>
 import {HTTP, Files} from '@/assets/scripts/http-common.js';
+import Maileditor from '@/components/admin/Maileditor.vue'
 export default {
   name: 'HelloWorld',
   props: [
     'setting'
   ],
+  components: {
+      Maileditor
+  },
   data: function(){
     return{
 		file: ''

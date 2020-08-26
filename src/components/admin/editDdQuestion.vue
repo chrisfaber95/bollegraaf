@@ -132,8 +132,15 @@ export default {
 			this.updateCanvas()
 		},	
 		drawCanvasImage: function() {
-			var wrh = this.image.width / this.image.height;
 			var c = document.getElementById("imageCanvas")
+			var elmnt = document.getElementById("dragdrop")
+			c.width = elmnt.offsetWidth	
+			
+			var ctx = c.getContext("2d")			
+			this.vueCanvas = ctx
+			
+			var wrh = this.image.width / this.image.height;
+			
             var newWidth = c.width;
             var newHeight = newWidth / wrh;
             if (newHeight > c.height) {
@@ -145,7 +152,9 @@ export default {
 			var c = document.getElementById("imageCanvas")
 			var elmnt = document.getElementById("dragdrop")
 			
-			c.width = elmnt.offsetWidth			
+			console.log(elmnt)	
+			c.width = elmnt.offsetWidth		
+			console.log(c)	
 			
 			var ctx = c.getContext("2d")			
 			this.vueCanvas = ctx

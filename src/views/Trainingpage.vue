@@ -162,7 +162,7 @@ export default {
 		starting_answer: [],
 		finished: false,
 		trainingpage: this,
-		currentPage: 0,
+		currentPage: 1,
 		currentSetting: 'info',
 		sub: null
     }
@@ -208,11 +208,11 @@ export default {
 			this.currentSetting = 'vragen'
 		}
 		else if(this.currentPage == this.filteredTrainingen.length && this.currentSetting == 'info'){
-			//this.$refs.indicators[this.currentPage].classList.add('pageDone')
+			this.$refs.indicators[this.currentPage-1].classList.add('pageDone')
 			this.currentPage = this.currentPage + 1
 		}
 		else if(this.currentPage < this.filteredTrainingen.length && this.currentSetting == 'info'){
-			this.$refs.indicators[this.currentPage].classList.add('pageDone')
+			this.$refs.indicators[this.currentPage-1].classList.add('pageDone')
 			this.$refs.scroller.scrollTop = 0
 			this.currentPage = this.currentPage + 1
 		}
