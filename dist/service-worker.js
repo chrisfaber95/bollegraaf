@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/precache-manifest.4a73cea508f1af3f65d97761d440a9ed.js"
+  "/precache-manifest.cbb9db4be9e40bd42e8896cace65e015.js"
 );
 
 workbox.core.setCacheNameDetails({prefix: "bollegraaf"});

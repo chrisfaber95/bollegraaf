@@ -21,9 +21,8 @@
 					<hr />
 					
 					<font-awesome-icon icon="file" />
-					<b-dropdown id="user-menu" :text='$t("admin.words.exam")'>
+					<b-dropdown id="user-menu" text="Instellingen">
 						<b-dropdown-item @click="changeTopic('test', 'list')">{{ $t("admin.words.overview") }}</b-dropdown-item>
-						<b-dropdown-item @click="changeTopic('test', 'add')">{{ $t("admin.words.add") }}</b-dropdown-item>
 					</b-dropdown>
 				</div>
                 <div class="col-xl-10 col-lg-10 col-md-12 col-sm-12 col-xs-12">

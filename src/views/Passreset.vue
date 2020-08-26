@@ -51,9 +51,14 @@ export default {
 			HTTP.put('user/forget', data)
 			.then(response => {
 				console.log(response.data)
-				alert("You have succesfully changed your password")
-				window.location = "/"
-				return true
+				if(response.data.err_code == 1){
+					alert(response.data.err)
+				}
+				else{
+					alert("You have succesfully changed your password")
+					window.location = "/"
+					return true
+				}
 			})
 		}
 		/*
