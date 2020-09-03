@@ -265,13 +265,31 @@ export default {
  computed:{
      filteredTrainingen: function(){
        var filtered = [];
-		console.log(this.$refs.head)
+		var dif = []
+		if(this.sub != null){
+		console.log(this.sub)
+			dif = this.sub.difficulty.split('')
+		}
+		
+		
 		for(var item in this.training){
-		if(this.training[item].page != 0 && this.training[item].language_id  == this.$refs.head.language_id){
-			console.log(this.training)
-			filtered.push(this.training[item])
-         }
-       }
+			if(dif.length != 0){
+				if(this.training[item].page != 0 && this.training[item].language_id == this.$refs.head.language_id && dif.includes(this.training[item].difficulty.toString())){
+					filtered.push(this.training[item])
+				}
+				if(filtered.length == 3){
+					break;	
+				}
+			}
+			else{
+				if(this.training[item].language_id == this.$refs.head.language_id && this.training[item].difficulty == 0){
+					filtered.push(this.training[item])
+				}
+				if(filtered.length == 3){
+					break;	
+				}
+			}
+		}
 		console.log(filtered)
 		return filtered
 	},

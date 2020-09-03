@@ -26,6 +26,10 @@
 
 	<b-modal id="modal-question" size="xl" hide-footer hide-header v-if="selectedQuestion">
 		<div class="d-block" v-if="filteredQuestionAnswers[0].questiontype == 'tf' || filteredQuestionAnswers[0].questiontype == 'mc' || filteredQuestionAnswers[0].questiontype == 'm'">
+			<p>Moeilijkheid</p>
+			<select v-model="filteredQuestionAnswers[0].difficulty">
+				<option v-for="item in 9" v-bind:key="item" v-bind:value="item">{{item}}</option>
+			</select>
 			<p>Vraag:</p>
 			<ckeditor :editor="editor" v-model="filteredQuestionAnswers[0].question_text" :config="editorConfig"></ckeditor>
 			<p>Antwoorden:</p>
@@ -99,7 +103,7 @@
 							<br>
 							<p>Moeilijkheid</p>
 							<select v-model="newQuestion.difficulty">
-								<option v-for="item in 5" v-bind:key="item" v-bind:value="item">{{item}}</option>
+								<option v-for="item in 9" v-bind:key="item" v-bind:value="item">{{item}}</option>
 							</select>
 						</div>
 					</div>
@@ -152,7 +156,7 @@
 							<br>
 							<p>Moeilijkheid</p>
 							<select v-model="newQuestion.difficulty">
-								<option v-for="item in 5" v-bind:key="item" v-bind:value="item">{{item}}</option>
+								<option v-for="item in 9" v-bind:key="item" v-bind:value="item">{{item}}</option>
 							</select>
 						</div>
 					</div>
@@ -274,12 +278,14 @@ methods:{
 	},
 	deleteQuestion:function(qId){
 		alert(qId)
-		HTTP.delete('/questions/'+qId)
-		.then(response => {
-            console.log(response.data)
-			alert(response.data.message)
-			this.getQuestions()
-		})
+		if(confirm("Do you really want to delete this?")){			
+			HTTP.delete('/questions/'+qId)
+			.then(response => {
+				console.log(response.data)
+				alert(response.data.message)
+				this.getQuestions()
+			})
+		}
 	},
 	changeQuestion: function(sub){
 		this.selectedQuestion = sub

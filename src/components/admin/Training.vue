@@ -269,17 +269,17 @@ methods:{
 		}
       },
 	removeTraining: function(){	
-		if(confirm("Do you really want to delete?")){
-		if(this.selectedTraining != null){
-			HTTP.delete('training/' + this.selectedTraining)
-			.then(response => {
-				console.log(response.data)
-				this.getTrainingen()
-			})
-		}
-		else{
-			alert("Geen training geselecteerd")  
-		}
+		if(confirm("Do you really want to delete this?")){
+			if(this.selectedTraining != null){
+				HTTP.delete('training/' + this.selectedTraining)
+				.then(response => {
+					console.log(response.data)
+					this.getTrainingen()
+				})
+			}
+			else{
+				alert("Geen training geselecteerd")  
+			}
 		}
 	},
 	addOnderdeel: function(onderdeel, selected){

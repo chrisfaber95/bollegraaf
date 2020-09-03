@@ -150,6 +150,37 @@ const routes = [
     }
   },
   {
+    path: '/exam/',
+    name: 'Exam',
+    props: true,
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "about" */ '../views/Exam.vue'),
+    meta:{
+      requiresAuth: true,
+      breadcrumbs: [
+        { name: 'Home', link:'home'},
+        { name: 'Exam', link:'exam'}
+      ]
+    }
+  },
+  {
+    path: '/exampage/:training',
+    name: 'Exampage',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "about" */ '../views/Exampage.vue'),
+    meta:{
+      requiresAuth: false,
+      breadcrumbs: [
+        { name: 'Home', link:'home'},
+        { name: 'Exam', link:'exam'}
+      ]
+    }
+  },
+  {
     path: '/admin',
     name: 'Admin',
     // route level code-splitting

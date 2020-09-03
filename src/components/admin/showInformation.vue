@@ -40,7 +40,13 @@
 				<select v-model="edit.language_id">
 					<option v-for="item in filteredLanguage" v-bind:key="item.language_id" v-bind:value="item.language_id">{{item.name}}</option>
 				</select>
+				<br>
+				<label>Moeilijkheid: </label>	
+				<select v-model="edit.difficulty">
+					<option v-for="item in 9" v-bind:key="item" v-bind:value="item">{{item}}</option>
+				</select>
 			</div>
+			
 			<div class="">
 				<b-button @click="deleteInformation(edit.iId)">Delete pagina</b-button>
 				<b-button @click="saveInformation(edit)">Pagina opslaan</b-button>
@@ -99,7 +105,8 @@ data: function(){
           iPage: 0,
           iId: 0,
           iText: '',
-			language_id: 0
+			language_id: 0,
+			difficulty: 1
         }],
 		referention: [],
 		selectedRef: null,
@@ -134,7 +141,8 @@ methods:{
 			iPage: 0,
 			iId: 0,
 			iText: '',
-			language_id: 1
+			language_id: 1,
+			difficulty: 1
 		}]
 		HTTP.get('information/'+this.selectedSub)
 		.then(response => {

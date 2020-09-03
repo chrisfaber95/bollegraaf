@@ -14,12 +14,15 @@ function openTranslate(){
 			hello: tr[1][item],
 			login: tr[2][item],
 			followTraining: tr[3][item],
-			showTraining: tr[4][item]
+			showTraining: tr[4][item],
+			showProgress: tr[72][item],
+			examsReady: tr[73][item],
 		},
 		words:{
 			login: tr[6][item],
 			username: tr[7][item],
-			password: tr[8][item]
+			password: tr[8][item],
+			my: tr[9][item]
 		},
 		admin:{
 			words: {
@@ -71,11 +74,11 @@ function openTranslate(){
 			quit: tr[50][item]
 		},
 		trainingblock:{
-			training: 'Trainig',
+			training: tr[44][item],
 			program: tr[68][item],
-			subject: 'Onderdeel',
-			section: 'Section',
-			continue: 'Hervat training',
+			subject: tr[74][item],
+			section: tr[75][item],
+			continue: tr[76][item],
 		},
 		training:{
 			quit: tr[50][item],

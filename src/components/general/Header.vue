@@ -19,8 +19,8 @@
                             <router-link :to="{ name: 'Settings'}" tag="b-dropdown-item">{{ $t("header.settings") }}</router-link>
                         </b-nav-item-dropdown>
                         <router-link to="/training" tag="b-nav-item">{{ $t("header.training") }}</router-link>
-                        <router-link to="/progress" tag="b-nav-item">{{ $t("header.progress") }}</router-link>
-                        <router-link :to="{ name: 'Training', params: {page: 'tests' } }" tag="b-nav-item">{{ $t("header.exams") }}</router-link>
+                        <router-link to="/progress" tag="b-nav-item">{{ $t("header.progress") }}</router-link>                        
+                        <router-link to="/exam" tag="b-nav-item">{{ $t("header.exams") }}</router-link>
                         <div id="bericht-navlink">
                             <router-link to="/messages" tag="b-nav-item">{{ $t("header.message") }} {{notReaded}}</router-link>
                             <div v-if="notOpenedMail" class="berichtheader-blok">
