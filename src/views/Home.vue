@@ -16,15 +16,15 @@
 			</div>
 			<div class="col-lg-5">
 				<div class="voortgang">
-					<h3>Mijn voortgang</h3>
+					<h3>{{ $t("words.my") }} {{ $t("header.progress") }}</h3>
 					<hr/>
 					<Progress />
-					<p>Bekijk de hele voortgang</p>
+					<p>{{ $t("message.showProgress") }}</p>
 				</div>
 				<div class="Eindtoetsen">
-					<h3>Eindtoetsen</h3>
+					<h3>{{ $t("header.exams") }}</h3>
 					<hr />
-					<p>Er zijn eindtoetsen beschikbaar</p>
+					<p>{{ $t("message.examsReady") }}</p>
 					<Quiz/>
 				</div>
 			</div>

@@ -8,7 +8,7 @@
 				<br>
 				<p>Moeilijkheid</p>
 				<select v-model="newQuestion.difficulty">
-					<option v-for="item in 5" v-bind:key="item" v-bind:value="item">{{item}}</option>
+					<option v-for="item in 9" v-bind:key="item" v-bind:value="item">{{item}}</option>
 				</select>
 			</div>
 		</div>
@@ -22,15 +22,15 @@
 		<div id="dragdrop">
 			<canvas id="imageCanvas" @mousemove="showCoordinates" @mousedown="setDraggable" @mouseup="setDraggable"></canvas>	
 		</div>
-		<b-button v-if="image" @click="newBox(0, 0)">Nieuwe vierkant</b-button>
+		<b-button v-if="image" @click="newBox(0, 0)">Nieuw antwoord</b-button>
 		
 		<div v-if="newQuestion.answers.length > 0">
 			<div class="answerEditor" v-for="(item, index) in newQuestion.answers" v-bind:key="index">
 				{{index}}:<b-input type="text" v-model="item.answer_text" ></b-input>
 			</div>
 		</div>
-		<b-button @click="saveEditQuestion(filteredQuestionAnswers)">Opslaan</b-button>
-		<b-button @click="updateCanvasImageSrc(newQuestion.image)">Afbeelding herladen</b-button>
+		<b-button @click="saveEditQuestion(newQuestion)">Opslaan</b-button>
+		<b-button @click="updateCanvas()">update</b-button>
 	</div>
 </template>
 
@@ -81,10 +81,8 @@ export default {
 	},
 	methods:{
 		saveEditQuestion: function(edit){
-			for(var item in edit){
-				console.log(edit[item])
-			}
-			HTTP.put('/questions/'+edit[0].question_id, edit)
+			console.log(edit)
+			HTTP.put('/questions/'+this.question, edit)
 			.then(response => {
 				console.log(response.data)
 				alert(response.data.message)
@@ -162,25 +160,12 @@ export default {
 		newBox: function(x, y){
 			var width = document.getElementById("imageCanvas").width/10
 			var height = document.getElementById("imageCanvas").height/10
-			this.newQuestion.answers.push({x: x, y: y, width: width, height: height, answer_text: ''})
-			this.vueCanvas.beginPath();
-			this.vueCanvas.fillStyle  = "#003399";
-				
-			this.vueCanvas.shadowColor = "#003399";
-			this.vueCanvas.shadowBlur = 5;
-			this.vueCanvas.shadowOffsetX = 3;
-			this.vueCanvas.shadowOffsetY = 3;
+			this.newQuestion.answers.push({translateX: x, translateY: y, width: width, height: height, answer_text: ''})
+			this.drawBox(this.newQuestion.answers.length - 1, x, y, (x+width/2), (y + height/2))
 			
-			this.vueCanvas.fillRect(x, y, width, height)
-			this.vueCanvas.stroke()
-			
-			this.vueCanvas.font = "16px Arial"	
-			this.vueCanvas.textAlign = "center";			
-			this.vueCanvas.fillStyle = "white";			
-			this.vueCanvas.fillText(this.newQuestion.answers.length - 1, (x+width/2), (y + height/2))
-			console.log(this.newQuestion.answers)
 		},
 		drawBox: function(index, x, y, width, height){
+			console.log(index)
 			this.vueCanvas.beginPath();
 			this.vueCanvas.fillStyle  = "#003399";
 				
@@ -189,21 +174,21 @@ export default {
 			this.vueCanvas.shadowOffsetX = 3;
 			this.vueCanvas.shadowOffsetY = 3;
 			this.vueCanvas.fillRect(x, y, width, height)
-			this.vueCanvas.stroke()
 			
 			this.vueCanvas.font = "16px Arial"	
 			this.vueCanvas.textAlign = "center";			
 			this.vueCanvas.fillStyle = "white";	
-			this.vueCanvas.fillText(index, (x+width/2), (y + height/2))
-			
+			this.vueCanvas.fillText(this.newQuestion.answers[index].answer_text, (x+width/2), (y + height/2))
+			this.vueCanvas.stroke()
 			
 		},
 		updateCanvas: function(){
 			var c = document.getElementById("imageCanvas")
 			this.vueCanvas.clearRect(0,0,c.width,c.height)
 			this.drawCanvasImage()
-			for (var i = this.newQuestion.answers.length - 1; i >= 0; i--) {
-				this.drawBox(i, this.newQuestion.answers[i].x, this.newQuestion.answers[i].y, this.newQuestion.answers[i].width, this.newQuestion.answers[i].height)
+			for (var i = this.newQuestion.answers.length - 1; i >= 0; i--) {		
+				console.log( this.newQuestion.answers[i])
+				this.drawBox(i, this.newQuestion.answers[i].translateX, this.newQuestion.answers[i].translateY, this.newQuestion.answers[i].width, this.newQuestion.answers[i].height)
 			}
 		},
 		moveBox: function(){
@@ -214,37 +199,40 @@ export default {
 			//if any circle is focused
 			if (this.focused.state) {
 				if(this.dragBR){
-					this.newQuestion.answers[this.focused.key].width = Math.abs(this.newQuestion.answers[this.focused.key].x-this.mousePosition.x);
-					this.newQuestion.answers[this.focused.key].height = Math.abs(this.newQuestion.answers[this.focused.key].y-this.mousePosition.y);
+					this.newQuestion.answers[this.focused.key].width = Math.abs(this.newQuestion.answers[this.focused.key].translateX-this.mousePosition.x);
+					this.newQuestion.answers[this.focused.key].height = Math.abs(this.newQuestion.answers[this.focused.key].translateY-this.mousePosition.y);
 				}
 				else{				
-					this.newQuestion.answers[this.focused.key].x = this.mousePosition.x;
-					this.newQuestion.answers[this.focused.key].y = this.mousePosition.y;
+					this.newQuestion.answers[this.focused.key].translateX = this.mousePosition.x;
+					this.newQuestion.answers[this.focused.key].translateY = this.mousePosition.y;
 				}
 				this.updateCanvas();
 				return;
 			}
 			
 			for (var i = 0; i < this.newQuestion.answers.length; i++) {
+			console.log(i)
 				if (this.intersects(this.newQuestion.answers[i])) {
+					console.log(i)
 					this.focused.key = i
 					this.focused.state = true;
-					break;
 				}
 			}
 		},
 		intersects: function(box){
-		console.log(this.mousePosition.y <= box.y + box.height)
-			if( this.checkCloseEnough(this.mousePosition.x, box.x + box.width) && this.checkCloseEnough(this.mousePosition.y, box.y + box.height) ){
+			console.log(box)
+			if( this.checkCloseEnough(this.mousePosition.x, box.translateX + box.width) && this.checkCloseEnough(this.mousePosition.y, box.translateY + box.height) ){
+				console.log("dragbr")
+				
 				this.dragBR = true;
 				return true
 			}
-			if((this.mousePosition.x >= box.x && this.mousePosition.x <= box.x + box.width) && (this.mousePosition.y >= box.y && this.mousePosition.y <= box.y + box.height)){
-			//console.log("true")
+			else if((this.mousePosition.x >= box.translateX && this.mousePosition.x <= box.translateX + box.width) && (this.mousePosition.y >= box.translateY && this.mousePosition.y <= box.translateY + box.height)){
+			console.log("true")
 				return true
 			}
 			else{
-			//console.log("false")
+			console.log("false")
 				return false
 			}
 		},
@@ -304,11 +292,21 @@ export default {
 			}
 			console.log(filtered)
 			return filtered
+		},
+		questImg(){
+			return this.newQuestion.image
 		}
 	},
 	watch:{
 		image: function(){
 			this.drawCanvasImage()
+		},
+		questImg: function(){
+			this.updateCanvasImageSrc(this.newQuestion.image)
+			this.updateCanvas()
+		},
+		filteredQuestionAnswers: function(){
+			this.updateCanvas()
 		}
 	}
 }

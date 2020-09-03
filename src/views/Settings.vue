@@ -29,7 +29,9 @@
         </div>
         <div class="profile-block" id="wachtwoord">
             <h3>Wachtwoord wijzigen</h3>
-            <div class="inputrow"><p>Huidig wachtwoord</p><input type="text" /></div>
+			<b-input type="password" :placeholder="$t('words.password')" v-model="newpass"/>
+			<b-input type="password" :placeholder="'Herhaal ' + $t('words.password')" v-model="secondpass"/>
+			<b-button @click="forgotPassword()">Wijzig wachtwoord</b-button>
         </div>
         <b-button @click="saveInfo()">Wijzigingen opslaan</b-button>
     </div>
@@ -41,6 +43,7 @@
 //import Trainingitem from '@/components/Trainingitem.vue'
 import Header from '@/components/general/Header.vue'
 import auth from '@/assets/scripts/auth';
+import {HTTP} from '@/assets/scripts/http-common.js';
 
 export default {
   name: 'Home',
@@ -49,14 +52,17 @@ export default {
   },
   data: function(){
     return{
-        info: {}
+        info: {},
+		oldpass: '',
+		newpass: '',
+		secondpass: ''
     }
   },
   methods:{
     saveInfo: function (){
-        console.log(this.info)
-      localStorage.setItem('userinfo', JSON.stringify(this.info))
-      auth.updateInfo()
+		localStorage.setItem('userinfo', JSON.stringify(this.info))
+		auth.updateInfo()
+		alert("Info updated")
     },
     getInfo: function (){
       if(!localStorage.getItem('userinfo')){
@@ -67,7 +73,31 @@ export default {
     },
     getEmail: function (){
       return localStorage.getItem('info')
-    }
+    },
+	forgotPassword: function(){
+		if(this.newpass != this.secondpass || this.newpass == ''){
+			alert("Passwords are not the same")
+		}
+		else{
+			var data = {
+				pass: this.newpass,
+				user_id: auth.getId(),
+				token: 'passchange'
+			}
+			HTTP.put('user/forget', data)
+			.then(response => {
+				console.log(response.data)
+				if(response.data.err_code == 1){
+					alert(response.data.err)
+				}
+				else{
+					alert("You have succesfully changed your password")
+					//window.location = "/"
+					return true
+				}
+			})
+		}
+	}
   },
   mounted(){
       this.getInfo()

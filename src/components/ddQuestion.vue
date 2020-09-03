@@ -47,12 +47,9 @@ export default {
   },
  methods:{
 	getQuestion: function(){
-		console.log(this.questionId)
 		HTTP.get('/questions/single/'+this.questionId+'/dd')
 		.then(response => {
-			console.log(response.data)
 			this.answers = response.data.question
-			console.log(this.answers)
 			for(var item in this.answers){
 				this.answers[item].translateX = 0
 				this.answers[item].translateY = 50 * item
@@ -60,7 +57,6 @@ export default {
 				this.answers[item].height = 50
 				this.answers[item].correct = 0
 			}
-			console.log(this.answers)
 			this.updateCanvasImage(this.answers[0].image)
 			return this.answers
 		})
@@ -68,7 +64,6 @@ export default {
 	getAnswers: function(){
 		HTTP.get('/questions/single/'+this.questionId+'/dd')
 		.then(response => {
-			console.log(response.data)
 			this.questions = response.data.question
 			return this.questions
 		})
@@ -175,7 +170,6 @@ export default {
 		}
 	},
 	intersects: function(box){
-	console.log(this.mousePosition.y <= box.y + box.height)
 		if( this.checkCloseEnough(this.mousePosition.x, box.translateX + box.width) && this.checkCloseEnough(this.mousePosition.y, box.translateY + box.height) ){
 			this.dragBR = true;
 			return true
@@ -218,7 +212,6 @@ export default {
 			this.moveBox()
 		},	
 	answerChanged: function(index){
-		console.log(index)
 		if(this.given_answers[index] == true){
 			this.given_answers[index] = false
 		}
@@ -292,7 +285,6 @@ export default {
 				filteredIds.push(this.questions[item].dd_answer_id)
 			}
 		}
-       console.log(filtered)
          return filtered
      }
   } 

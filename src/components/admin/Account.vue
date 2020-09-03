@@ -32,8 +32,9 @@
                 <div class="col-xl-1 col-lg-1 col-md-3 col-sm-3 col-xs-3">
                     <b-button  v-b-modal.modal-3 class="bewerk-btn" @click="changeUser(account); getTrainingen(account); getProgress(account)">Openen</b-button>
                 </div>
-                <div class="col-xl-1 col-lg-1 col-md-3 col-sm-3 col-xs-3">
-                    <b-button  v-b-modal.modal-2 class="bewerk-btn" @click="changeUser(account); getCertificates(selectedUser)">Bewerk</b-button>
+                <div class="col-xl-1 col-lg-1 col-md-3 col-sm-3 col-xs-3 edit-col">
+                    <b-button  v-b-modal.modal-2 class="btn bewerk-btn" @click="changeUser(account); getCertificates(selectedUser)"><font-awesome-icon icon="edit"></font-awesome-icon></b-button>
+                    <b-button  variant="danger" v-b-modal.modal-2 class="btn delete-btn" @click="deleteUser(account)"><font-awesome-icon icon="trash-alt"></font-awesome-icon></b-button>					
                 </div>
                 <hr />
             </div>
@@ -125,7 +126,7 @@
 								</div>
 								<div class="col-4">
 									<p>Niveau<p>
-									<p>1 -> 5</p>
+									<p>1 -> 9</p>
 								</div>
                             </div>
                             <div class="row" v-for="training in filteredTrainingSub" v-bind:key="training.subonderdeel_id">
@@ -290,11 +291,14 @@ export default {
 	updateTraining: function(training, account){
 		console.log(training)
 		if(training.difficulty == 1 && training.isVisible == 0){
-			training.difficulty == '00000'
+			training.difficulty == '000000000'
 		}
-		if(training.difficulty == null && training.isVisible == 1){
-			training.difficulty == '00000'
+		else if(training.difficulty == null && training.isVisible == 1){
+			training.difficulty == '000000000'
 		}
+		//else if(training.difficulty.length >= 5 && training.isVisible == 1){
+		//	training.difficulty == '000000000'
+	//	}
 		HTTP.put('/training/user/'+account.user_id, training)
 		.then(response => {
 			console.log(response.data)
@@ -375,6 +379,15 @@ export default {
 	},
 	customExpireFormat: function(date){
 		return moment(date).format('YYYY-MM-DD')
+	},
+	deleteUser:function(account){
+		if(confirm("Do you really want to delete this?")){			
+			HTTP.delete('/user/'+account.user_id)
+			.then(response => {
+				console.log(response.data)				
+				this.getAccounts();
+			})
+		}
 	}
   },
   mounted(){
@@ -561,6 +574,17 @@ a {
   }
 }
 .niveau{
-	display: inline-flex
+	display: inline-flex;
+}
+.edit-col{
+	display: inline-flex;
+}
+.edit-col .btn{
+	display: block;
+}
+.delete-btn{
+    padding: 5px;
+    margin: 5px;
+    background-color: rgba(255,0,0,1);
 }
 </style>
